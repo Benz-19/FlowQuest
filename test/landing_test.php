@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/images/logo.png" type="image/x-icon">
     <title>FlowQuest — Smart Invoice & Subscription System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
