@@ -6,6 +6,10 @@ use App\Core\BaseController;
 
 class PagesController
 {
+    public function renderTestPage()
+    {
+        require __DIR__ . '/../../../../test/landing_test.php';
+    }
     public function renderLandingPage()
     {
         $controller = new BaseController;

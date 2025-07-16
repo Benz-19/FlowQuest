@@ -18,3 +18,6 @@ Route::get('/login', [PagesController::class, 'renderLoginPage']);
 // User Role Selection
 Route::get('/register-freelancer', [PagesController::class, 'renderFreelancerOnboardingPage']);
 Route::get('/register-client', [PagesController::class, 'renderClientOnboardingPage']);
+
+// Test page
+Route::get('/test', [PagesController::class, 'renderLandingPage']);
