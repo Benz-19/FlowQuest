@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use CustomRouter\Route;
 use App\Http\Controllers\Pages\PagesController;
 use App\Http\Controllers\Payments\PaymentsController;
@@ -13,6 +14,7 @@ Route::get('/', [PagesController::class, 'renderLandingPage']);
 
 //Register
 Route::get('/register', [PagesController::class, 'renderRegisterPage']);
+Route::post('/process-registration', [AuthController::class, 'register']);
 //Login
 Route::get('/login', [PagesController::class, 'renderLoginPage']);
 // User Role Selection

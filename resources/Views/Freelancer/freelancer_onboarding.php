@@ -57,7 +57,7 @@
         const steps = [{
                 question: "What’s your full name?",
                 name: "name",
-                placeholder: "John Doe",
+                placeholder: "Johnny Test",
                 type: "text",
                 icon: "👤"
             },
@@ -79,7 +79,7 @@
             {
                 question: "What services do you offer?",
                 name: "services",
-                placeholder: "e.g. UI/UX, Web Dev, Marketing",
+                placeholder: "e.g. UI/UX, Web Dev, Marketing, Catering",
                 type: "text",
                 icon: "🛠"
             },
@@ -107,22 +107,22 @@
             const step = steps[currentStep];
 
             container.innerHTML = `
-        <div class="fade-card" id="animated-step">
-          <h2 class="text-xl font-semibold mb-4">${step.icon} ${step.question}</h2>
-          ${step.hint ? `<p class="text-sm text-red-600 mb-2">${step.hint}</p>` : ''}
-          <input type="${step.type}" id="inputField" name="${step.name}"
-            placeholder="${step.placeholder}" class="w-full px-4 py-2 border rounded focus:outline-none mb-4" />
+            <div class="fade-card" id="animated-step">
+            <h2 class="text-xl font-semibold mb-4">${step.icon} ${step.question}</h2>
+            ${step.hint ? `<p class="text-sm text-red-600 mb-2">${step.hint}</p>` : ''}
+            <input type="${step.type}" id="inputField" name="${step.name}"
+                placeholder="${step.placeholder}" class="w-full px-4 py-2 border rounded focus:outline-none mb-4" />
 
-          <div class="flex justify-between mt-6">
-            ${currentStep > 0
-              ? `<button onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>`
-              : "<span></span>"
-            }
-            <button onclick="nextStep()" id="nextBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-              ${currentStep === steps.length - 1 ? "Review" : "Next"}
-            </button>
-          </div>
-        </div>
+            <div class="flex justify-between mt-6">
+                ${currentStep > 0
+                ? `<button onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>`
+                : "<span></span>"
+                }
+                <button onclick="nextStep()" id="nextBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
+                ${currentStep === steps.length - 1 ? "Review" : "Next"}
+                </button>
+            </div>
+            </div>
       `;
 
             requestAnimationFrame(() => {
@@ -154,24 +154,34 @@
             const container = document.getElementById("form-step");
 
             const listItems = Object.entries(answers).map(([key, value]) => `
-        <li class="mb-2">
-          <strong class="capitalize">${key}:</strong> ${key === "password" ? "••••••••" : value}
-        </li>
-      `).join("");
+            <li class="mb-2">
+                <strong class="capitalize">${key}:</strong> ${key === "password" ? "••••••••" : value}
+            </li>
+            `).join("");
+
+            // Hidden input fields to submit collected data
+            const hiddenFields = Object.entries(answers).map(([key, value]) => `
+            <input type="hidden" name="${key}" value="${value}">
+            `).join("");
 
             container.innerHTML = `
-        <div class="fade-card show">
-          <h2 class="text-xl font-semibold mb-4">Review Your Information</h2>
-          <ul class="mb-6">${listItems}</ul>
+            <form action="/process-registration" method="POST" class="fade-card show">
+                <h2 class="text-xl font-semibold mb-4">Review Your Information</h2>
+                <ul class="mb-6">${listItems}</ul>
 
-          <div class="flex justify-between">
-            <button onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>
-            <button onclick="registerUser()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-              Register Now
-            </button>
-          </div>
-        </div>
-      `;
+                <input type="hidden" name="user_type" value="freelancer">
+                ${hiddenFields}
+
+                <div class="flex justify-between">
+                <button type="button" onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                    Previous
+                </button>
+                <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Register Now
+                </button>
+                </div>
+            </form>
+            `;
         };
 
         const registerUser = () => {

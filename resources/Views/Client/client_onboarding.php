@@ -105,12 +105,12 @@
         function renderStep(index) {
             const q = questions[index];
             wrapper.innerHTML = `
-        <div class="step active">
-          <label class="block text-lg font-medium mb-2">${q.label}</label>
-          <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
-          ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
-        </div>
+            <div class="step active">
+            <label class="block text-lg font-medium mb-2">${q.label}</label>
+            <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
+            ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
+            </div>
       `;
             prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
             nextBtn.style.display = 'inline-block';
@@ -118,18 +118,32 @@
         }
 
         function renderReview() {
+            const hiddenFields = Object.entries(responses).map(([key, value]) => `
+            <input type="hidden" name="${key}" value="${value}">
+            `).join("");
+
             wrapper.innerHTML = `
-        <div class="step active">
-          <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
-          <ul class="space-y-2 text-sm">
-            ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
-          </ul>
-        </div>
-      `;
+            <form action="/process-registration" method="POST" class="step active">
+                <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
+                <ul class="space-y-2 text-sm mb-4">
+                ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
+                </ul>
+
+                <input type="hidden" name="user_type" value="client">
+                ${hiddenFields}
+
+                <div class="flex justify-between mt-6">
+                <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
+                <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
+                </div>
+            </form>
+            `;
+
             nextBtn.style.display = 'none';
-            prevBtn.style.display = 'inline-block';
-            submitBtn.style.display = 'inline-block';
+            prevBtn.style.display = 'none';
+            submitBtn.style.display = 'none';
         }
+
 
         nextBtn.addEventListener('click', () => {
             const input = document.getElementById('stepInput');
