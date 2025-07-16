@@ -80,6 +80,15 @@
             height: 60px;
             border-radius: 10px;
         }
+
+        #logo {
+            transform: translateX(-100%);
+            transition: transform 1s ease;
+        }
+
+        #logo.slide-in {
+            transform: translateX(0);
+        }
     </style>
 </head>
 
@@ -87,7 +96,9 @@
 
     <!-- Header -->
     <header class="flex items-center justify-between px-8 py-6">
-        <h1 class="text-3xl font-bold hover:text-gray-400 transition"><a href="/">FlowQuest</a></h1>
+        <a href="/">
+            <h1 id="logo" class="text-3xl font-bold hover:text-gray-400 transition">FlowQuest</h1>
+        </a>
         <nav class="space-x-6 text-sm text-gray-300">
             <a href="#features" class="hover:underline">Features</a>
             <a href="#cards" class="hover:underline">Tools</a>
@@ -103,7 +114,7 @@
             FlowQuest automates invoicing, manages recurring payments, and empowers your clients with sleek, intuitive tools — all in one futuristic dashboard.
         </p>
         <div class="mt-16">
-            <a href="#" class="glow bg-white text-black text-xl px-10 py-5 rounded-lg hover:bg-gray-200 transition">Get Started</a>
+            <a href="/login" class="glow bg-white text-black text-xl px-10 py-5 rounded-lg hover:bg-gray-200 transition">Get Started</a>
         </div>
     </section>
 
@@ -198,6 +209,8 @@
         </div>
     </footer>
 
+    <!-- JS -->
+    <script src="/js/loading_logo.js"></script>
     <!-- Scroll Animation Script -->
     <script>
         const cardSet = document.getElementById("card-set");

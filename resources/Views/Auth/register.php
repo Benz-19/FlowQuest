@@ -13,13 +13,12 @@
             font-family: 'Roboto', 'Lucida Grande', sans-serif;
         }
 
-        .slide-left {
+        #logo {
             transform: translateX(-100%);
-            opacity: 0;
-            transition: all 1s ease;
+            transition: transform 1s ease;
         }
 
-        .slide-left.visible {
+        #logo.slide-in {
             transform: translateX(0);
             opacity: 1;
         }
@@ -28,8 +27,9 @@
 
 <body class="bg-black text-white min-h-screen flex flex-col items-center justify-start pt-12 px-4">
 
-    <div id="headerText" class="absolute top-8 left-6 text-2xl sm:text-3xl font-bold slide-left">FlowQuest</div>
-
+    <a href="/">
+        <div id="logo" class="absolute top-8 left-6 text-2xl sm:text-3xl font-bold">FlowQuest</div>
+    </a>
     <div class="text-center mt-24">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Who Are You?</h1>
         <p class="text-gray-400 text-sm sm:text-base md:text-lg max-w-md mx-auto">
@@ -55,12 +55,8 @@
         </div>
     </div>
 
-    <script>
-        window.addEventListener('load', () => {
-            document.getElementById('headerText').classList.add('visible');
-        });
-    </script>
-
+    <!-- JS -->
+    <script src="/js/loading_logo.js"></script>
 </body>
 
 </html>

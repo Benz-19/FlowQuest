@@ -24,24 +24,24 @@
             opacity: 1;
         }
 
-        .slide-left {
+        #logo {
             transform: translateX(-100%);
-            opacity: 0;
-            transition: all 1.2s ease;
+            transition: transform 1s ease;
         }
 
-        .slide-left.visible {
+        #logo.slide-in {
             transform: translateX(0);
-            opacity: 1;
         }
     </style>
 </head>
 
 <body class="bg-black text-white h-screen w-screen flex items-center justify-center overflow-hidden">
 
-    <div id="siteName" class="absolute top-8 left-10 text-2xl font-bold slide-left">
-        FlowQuest
-    </div>
+    <a href="/">
+        <div id="logo" class="absolute top-8 left-10 text-2xl font-bold">
+            FlowQuest
+        </div>
+    </a>
 
     <div id="loginCard" class="slide-up w-full max-w-md p-8 bg-white text-black rounded-xl shadow-2xl">
         <h2 class="text-2xl font-semibold mb-2 text-center">Welcome Back</h2>
@@ -74,10 +74,11 @@
         </p>
     </div>
 
+    <!-- JS -->
+    <script src="/js/loading_logo.js"></script>
     <script>
         window.addEventListener('load', () => {
             document.getElementById('loginCard').classList.add('visible');
-            document.getElementById('siteName').classList.add('visible');
         });
     </script>
 </body>

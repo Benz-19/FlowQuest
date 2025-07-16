@@ -37,17 +37,20 @@
 
 <body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 overflow-x-hidden">
 
-    <div id="logo" class="absolute top-6 left-6 text-2xl font-bold">
-        FlowQuest
-    </div>
+    <a href="/">
+        <div id="logo" class="absolute top-6 left-6 text-2xl font-bold">
+            FlowQuest
+        </div>
+    </a>
 
     <div class="w-full max-w-lg mt-24 md:mt-40">
         <div id="form-step" class="bg-white text-black rounded-xl shadow-lg p-8 min-h-[320px]"></div>
     </div>
 
+    <!-- JS -->
+    <script src="/js/loading_logo.js"></script>
     <script>
         window.addEventListener("load", () => {
-            document.getElementById("logo").classList.add("slide-in");
             renderStep();
         });
 

@@ -30,6 +30,13 @@ class PagesController
     public function renderFreelancerOnboardingPage()
     {
         $controller = new BaseController;
-        $controller->renderView('Pages/freelancer_onboarding');
+        $controller->renderView('Freelancer/freelancer_onboarding');
+    }
+
+    //
+    public function renderClientOnboardingPage()
+    {
+        $controller = new BaseController;
+        $controller->renderView('Client/client_onboarding');
     }
 }

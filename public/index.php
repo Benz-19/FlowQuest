@@ -1,4 +1,7 @@
 <?php
+if (!session_start()) {
+    session_start();
+}
 
 use CustomRouter\Route;
 
