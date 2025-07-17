@@ -3,6 +3,10 @@
 
 use App\Models\DB;
 
+/**
+ * Responsible for handling requests
+ * @param string $table stores the database table
+ */
 function processRequest(string $table)
 {
     $request_method = $_SERVER['REQUEST_METHOD'];
