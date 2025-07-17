@@ -2,6 +2,8 @@
 //dir App/Http/Cpntollers/Auth
 namespace App\Http\Controllers\Auth;
 
+header('Content-Type: application/json');
+
 class AuthController
 {
     private function redirectToLogin(string $user)

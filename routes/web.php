@@ -23,3 +23,4 @@ Route::get('/register-client', [PagesController::class, 'renderClientOnboardingP
 
 // Test page
 Route::get('/test', [PagesController::class, 'renderLandingPage']);
+Route::get('/test-pages', [PagesController::class, 'renderTestingPage']);
