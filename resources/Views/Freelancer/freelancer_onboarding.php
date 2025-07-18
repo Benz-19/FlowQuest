@@ -174,7 +174,7 @@
             `;
 
                 try {
-                    const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(stepValue)}`);
+                    const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(stepValue)}&user_type=freelancer`);
                     const data = await res.json();
                     document.getElementById("loader").remove();
 

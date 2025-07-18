@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 
 class UserDataApiController
 {
-    public function data()
+    public function getData()
     {
         require_once __DIR__ . '/../../../Helper/api_functions.php';
 
@@ -17,4 +17,6 @@ class UserDataApiController
         // Otherwise, default table data fetch (e.g. 'users')
         return processRequest('users');
     }
+
+    public function postData() {}
 }

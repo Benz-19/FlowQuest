@@ -194,7 +194,7 @@
                 wrapper.appendChild(loader);
 
                 try {
-                    const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(value)}`);
+                    const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(value)}&user_type=client`);
                     const data = await res.json();
                     document.getElementById('loader')?.remove();
 

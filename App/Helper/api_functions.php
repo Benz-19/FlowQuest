@@ -2,6 +2,8 @@
 // dir: App/Helper/api_functions.php
 
 use App\Models\DB;
+use App\Models\Admin;
+use App\Models\Client;
 use App\Models\Freelancer;
 
 /**
@@ -37,8 +39,17 @@ function handleGetMethod($request_data)
     // Email existence check
     if ($request_data === 'user-email-check' && isset($_GET['email'])) {
         $email = htmlspecialchars(trim($_GET['email']));
-        $freelancer = new Freelancer();
-        $exists = $freelancer->isUser($email);
+        $user_type = $_GET['user_type'];
+
+        // Choose class based on user type
+        $user = match ($user_type) {
+            'freelancer' => new Freelancer(),
+            'client'     => new Client(),
+            'admin'      => new Admin(),
+            default      => null
+        };
+
+        $exists = $user->isUser($email);
 
         return json_encode([
             'exists' => $exists

@@ -6,6 +6,7 @@ use Exception;
 use PDOException;
 use App\Models\DB;
 use App\Models\Interfaces\UserInterface;
+use PDOStatement;
 
 abstract class BaseUser extends DB implements UserInterface
 {
@@ -43,6 +44,15 @@ abstract class BaseUser extends DB implements UserInterface
         } catch (PDOException | Exception $error) {
             error_log("Error in BaseUser::isUser - " . $error->getMessage());
             return false;
+        }
+    }
+
+    public function register(array $params = [])
+    {
+        try {
+            $this->manageUser('create', $params);
+        } catch (PDOException | Exception | PDOStatement $error) {
+            error_log('Error in BaseUser::register - ' . $error->getMessage());
         }
     }
 
