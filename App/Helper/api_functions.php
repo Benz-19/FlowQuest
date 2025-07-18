@@ -1,79 +1,84 @@
 <?php
-// dir:App/Helper/api_functions.php
+// dir: App/Helper/api_functions.php
 
 use App\Models\DB;
+use App\Models\Freelancer;
 
 /**
- * Responsible for handling requests
- * @param string $table stores the database table
+ * Handles incoming requests (GET, POST, etc.)
  */
-function processRequest(string $table)
+function processRequest($request_data)
 {
     $request_method = $_SERVER['REQUEST_METHOD'];
-
     $jsonResponse = [];
+
     switch ($request_method) {
         case 'GET':
-            $jsonResponse = handleGetMethod($table);
+            $jsonResponse = handleGetMethod($request_data);
             break;
 
         case 'POST':
-            $jsonResponse = handlePostMethod($table);
+            $jsonResponse = handlePostMethod($request_data);
             break;
 
         default:
-            $jsonResponse = handleServerError($request_method); //handles potential server error
+            $jsonResponse = handleServerError($request_method);
             break;
     }
-    return $jsonResponse;
+
+    // Output as JSON
+    header('Content-Type: application/json');
+    echo $jsonResponse;
+    exit;
 }
 
-function handleGetMethod(string $table)
+function handleGetMethod($request_data)
 {
-    $query = "SELECT * FROM $table";
-    $db = new DB();
-    $result = $db->fetchAllData($query);
+    // Email existence check
+    if ($request_data === 'user-email-check' && isset($_GET['email'])) {
+        $email = htmlspecialchars(trim($_GET['email']));
+        $freelancer = new Freelancer();
+        $exists = $freelancer->isUser($email);
 
-    $data = [];
-
-    if ($result === null || empty($result)) {
-        $data = [
-            'data' => null,
-            'status' => 404,
-            'message' => 'No data found.',
-        ];
-    } else {
-        $data = [
-            'data' => $result,
-            'status' => 200,
-            'message' => 'Successfully obtained the data',
-        ];
+        return json_encode([
+            'exists' => $exists
+        ]);
     }
 
-    return json_encode($data);
+    // Generic table data fetch
+    if (!empty($request_data)) {
+        $query = "SELECT * FROM $request_data";
+        $db = new DB();
+        $result = $db->fetchAllData($query);
+
+        return json_encode([
+            'data' => $result,
+            'status' => 200,
+            'message' => 'Data fetched successfully'
+        ]);
+    }
+
+    return json_encode([
+        'data' => null,
+        'status' => 400,
+        'message' => 'Missing or invalid request parameter'
+    ]);
 }
 
-function handlePostMethod()
+function handlePostMethod($request_data)
 {
-    //
-}
-
-function handlePutMethod()
-{
-    //
-}
-
-function handleDeleteMethod()
-{
-    //
+    // Placeholder for POST logic (e.g. new registration)
+    return json_encode([
+        'status' => 501,
+        'message' => 'POST method not implemented yet'
+    ]);
 }
 
 function handleServerError(string $request_method)
 {
-    $data = [
+    return json_encode([
         'data' => null,
         'status' => 500,
-        'message' => 'Server Error. Unknown request method' . $request_method
-    ];
-    return json_encode($data);
+        'message' => "Server Error. Unknown request method: $request_method"
+    ]);
 }

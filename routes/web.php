@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UserDataApiController;
 use App\Http\Controllers\Auth\AuthController;
 use CustomRouter\Route;
 use App\Http\Controllers\Pages\PagesController;
@@ -15,6 +16,8 @@ Route::get('/', [PagesController::class, 'renderLandingPage']);
 //Register
 Route::get('/register', [PagesController::class, 'renderRegisterPage']);
 Route::post('/process-registration', [AuthController::class, 'register']);
+// Example in your routing file
+Route::get('/api/user-email-check', [UserDataApiController::class, 'data']);
 //Login
 Route::get('/login', [PagesController::class, 'renderLoginPage']);
 // User Role Selection

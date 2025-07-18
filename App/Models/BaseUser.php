@@ -25,6 +25,33 @@ abstract class BaseUser extends DB implements UserInterface
         return $this->execute($query, $params);
     }
 
+    /**
+     * The isUser method is resposible for determining if a user exists
+     * @param string $user_email is used to search of a user exists
+     * @param return bool true | false
+     */
+    public function isUser(string $user_email): ?bool
+    {
+        try {
+            $query = "SELECT * FROM users WHERE email=:email LIMIT 1";
+            $params = [':email' => $user_email];
+            $result = $this->fetchSingleData($query, $params);
+            if ($result === null) {
+                return false; // if user does not exists
+            }
+            return true;
+        } catch (PDOException | Exception $error) {
+            error_log("Error in BaseUser::isUser - " . $error->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * The getUserDetailsById method gets a specific user data in relations to the users and user_details table
+     * the user_details table consists of (admin_details, client_details, freelancer_etails)
+     * @param object $this->detailsTable could be admin_details, client_details, or freelancer_details
+     * @param int $user_id is the id of the user we would like to retrieve their data
+     */
     public function getUserDetailsById(int $user_id): ?array
     {
         try {
@@ -37,6 +64,27 @@ abstract class BaseUser extends DB implements UserInterface
             return $this->fetchSingleData($query, [':id' => $user_id]);
         } catch (PDOException | Exception $error) {
             error_log("Error in BaseUser::getUserDetailsById - " . $error->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * The method below retrieves all the users data in relations to the users and user_details table
+     * the user_details table consists of (admin_details, client_details, freelancer_etails)
+     * @param string $query is stores the SQL query needed to retrieve data
+     */
+    public function getAllUserData()
+    {
+
+        try {
+            $query = "SELECT u.username, u.email, u.user_type, u.email_verified, u.status,
+                             d.*
+                      FROM users AS u
+                      JOIN {$this->detailsTable} AS d ON u.id = d.user_id";
+
+            return $this->fetchAllData($query);
+        } catch (PDOException | Exception $error) {
+            error_log("Error in BaseUser::getAllUserData - " . $error->getMessage());
             return null;
         }
     }

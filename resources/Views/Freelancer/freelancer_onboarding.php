@@ -32,6 +32,25 @@
         #logo.slide-in {
             transform: translateX(0);
         }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #000;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -108,32 +127,73 @@
 
             container.innerHTML = `
             <div class="fade-card" id="animated-step">
-            <h2 class="text-xl font-semibold mb-4">${step.icon} ${step.question}</h2>
-            ${step.hint ? `<p class="text-sm text-red-600 mb-2">${step.hint}</p>` : ''}
-            <input type="${step.type}" id="inputField" name="${step.name}"
-                placeholder="${step.placeholder}" class="w-full px-4 py-2 border rounded focus:outline-none mb-4" />
+                <h2 class="text-xl font-semibold mb-4">${step.icon} ${step.question}</h2>
+                ${step.hint ? `<p class="text-sm text-red-600 mb-2">${step.hint}</p>` : ''}
+                <input type="${step.type}" id="inputField" name="${step.name}"
+                placeholder="${step.placeholder}" class="w-full px-4 py-2 border rounded focus:outline-none mb-2" />
 
-            <div class="flex justify-between mt-6">
+                <p id="errorMessage" class="text-sm text-red-500 mt-1 mb-3 hidden"></p>
+
+                <div class="flex justify-between mt-6">
                 ${currentStep > 0
-                ? `<button onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>`
-                : "<span></span>"
+                    ? `<button onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>`
+                    : "<span></span>"
                 }
                 <button onclick="nextStep()" id="nextBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-                ${currentStep === steps.length - 1 ? "Review" : "Next"}
+                    ${currentStep === steps.length - 1 ? "Review" : "Next"}
                 </button>
+                </div>
             </div>
-            </div>
-      `;
+            `;
+
 
             requestAnimationFrame(() => {
                 document.getElementById("animated-step").classList.add("show");
             });
         };
 
-        const nextStep = () => {
+        const nextStep = async () => {
             const field = document.getElementById("inputField");
-            if (!field.value.trim()) return alert("Please complete the field before continuing.");
-            answers[steps[currentStep].name] = field.value.trim();
+            const container = document.getElementById("form-step");
+
+            if (!field.value.trim()) {
+                alert("Please complete the field before continuing.");
+                return;
+            }
+
+            const stepName = steps[currentStep].name;
+            const stepValue = field.value.trim();
+
+            // Show loader if it's the email step
+            if (stepName === "email") {
+                container.innerHTML += `
+            <div id="loader" class="flex items-center mt-4">
+                <div class="loader mr-2"></div>
+                <p class="text-sm">Checking email...</p>
+            </div>
+            `;
+
+                try {
+                    const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(stepValue)}`);
+                    const data = await res.json();
+                    document.getElementById("loader").remove();
+
+                    if (data.exists) {
+                        const errorEl = document.getElementById("errorMessage");
+                        if (errorEl) {
+                            errorEl.textContent = "❌ This email already exists. Try another one.";
+                            errorEl.classList.remove("hidden");
+                        }
+                        return;
+                    }
+                } catch (error) {
+                    alert("Server error while checking email. Try again later.");
+                    document.getElementById("loader").remove();
+                    return;
+                }
+            }
+
+            answers[stepName] = stepValue;
 
             if (currentStep < steps.length - 1) {
                 currentStep++;
@@ -142,6 +202,7 @@
                 renderReview();
             }
         };
+
 
         const prevStep = () => {
             if (currentStep > 0) {

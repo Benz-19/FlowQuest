@@ -38,6 +38,26 @@
                 opacity: 1;
             }
         }
+
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #000;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -105,58 +125,99 @@
         function renderStep(index) {
             const q = questions[index];
             wrapper.innerHTML = `
-            <div class="step active">
+        <div class="step active">
             <label class="block text-lg font-medium mb-2">${q.label}</label>
+            ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
             <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}"
                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
-            ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
-            </div>
-      `;
+            <p id="errorMessage" class="text-red-600 text-sm mt-2 hidden"></p>
+        </div>
+    `;
             prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
             nextBtn.style.display = 'inline-block';
             submitBtn.style.display = 'none';
         }
 
+
         function renderReview() {
             const hiddenFields = Object.entries(responses).map(([key, value]) => `
             <input type="hidden" name="${key}" value="${value}">
-            `).join("");
+        `).join("");
 
             wrapper.innerHTML = `
             <form action="/process-registration" method="POST" class="step active">
                 <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
                 <ul class="space-y-2 text-sm mb-4">
-                ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
+                    ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
                 </ul>
 
                 <input type="hidden" name="user_type" value="client">
                 ${hiddenFields}
 
                 <div class="flex justify-between mt-6">
-                <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
-                <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
+                    <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
+                    <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
                 </div>
             </form>
-            `;
+        `;
 
             nextBtn.style.display = 'none';
             prevBtn.style.display = 'none';
             submitBtn.style.display = 'none';
         }
 
-
-        nextBtn.addEventListener('click', () => {
+        nextBtn.addEventListener('click', async () => {
             const input = document.getElementById('stepInput');
-            if (input && input.value.trim() !== '') {
-                responses[questions[currentStep].name] = input.value.trim();
-                currentStep++;
-                if (currentStep < questions.length) {
-                    renderStep(currentStep);
-                } else {
-                    renderReview();
+            const errorEl = document.getElementById('errorMessage');
+
+            if (!input || input.value.trim() === '') {
+                showError("Ensure this field is filled...");
+                return;
+            }
+
+            const name = questions[currentStep].name;
+            const value = input.value.trim();
+
+            // Email uniqueness check
+            if (currentStep === 1) {
+                const loader = document.createElement('div');
+                loader.id = 'loader';
+                loader.innerHTML = `
+            <div class="flex items-center mt-2 text-sm">
+                <svg class="animate-spin mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                Checking email...
+            </div>
+        `;
+                wrapper.appendChild(loader);
+
+                try {
+                    const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(value)}`);
+                    const data = await res.json();
+                    document.getElementById('loader')?.remove();
+
+                    if (data.exists) {
+                        showError("❌ This email already exists. Try another one.");
+                        return;
+                    }
+                } catch (err) {
+                    showError("Server error while checking email. Try again later.");
+                    document.getElementById('loader')?.remove();
+                    return;
                 }
             }
+
+            responses[name] = value;
+            currentStep++;
+            if (currentStep < questions.length) {
+                renderStep(currentStep);
+            } else {
+                renderReview();
+            }
         });
+
 
         prevBtn.addEventListener('click', () => {
             if (currentStep === questions.length) {
@@ -167,6 +228,21 @@
                 renderStep(currentStep);
             }
         });
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            if (!errorEl) return;
+
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+
+            // Hide after 6 seconds
+            setTimeout(() => {
+                errorEl.classList.add('hidden');
+                errorEl.textContent = '';
+            }, 6000);
+        }
+
 
         renderStep(currentStep);
     </script>
