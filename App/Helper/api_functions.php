@@ -1,14 +1,12 @@
 <?php
-// dir: App/Helper/api_functions.php
+// File: App/Helper/api_functions.php
 
 use App\Models\DB;
 use App\Models\Admin;
 use App\Models\Client;
 use App\Models\Freelancer;
+use App\Helper\Mailer;
 
-/**
- * Handles incoming requests (GET, POST, etc.)
- */
 function processRequest($request_data)
 {
     $request_method = $_SERVER['REQUEST_METHOD'];
@@ -28,7 +26,6 @@ function processRequest($request_data)
             break;
     }
 
-    // Output as JSON
     header('Content-Type: application/json');
     echo $jsonResponse;
     exit;
@@ -36,12 +33,10 @@ function processRequest($request_data)
 
 function handleGetMethod($request_data)
 {
-    // Email existence check
     if ($request_data === 'user-email-check' && isset($_GET['email'])) {
         $email = htmlspecialchars(trim($_GET['email']));
         $user_type = $_GET['user_type'];
 
-        // Choose class based on user type
         $user = match ($user_type) {
             'freelancer' => new Freelancer(),
             'client'     => new Client(),
@@ -49,24 +44,9 @@ function handleGetMethod($request_data)
             default      => null
         };
 
-        $exists = $user->isUser($email);
+        $exists = $user && $user->isUser($email);
 
-        return json_encode([
-            'exists' => $exists
-        ]);
-    }
-
-    // Generic table data fetch
-    if (!empty($request_data)) {
-        $query = "SELECT * FROM $request_data";
-        $db = new DB();
-        $result = $db->fetchAllData($query);
-
-        return json_encode([
-            'data' => $result,
-            'status' => 200,
-            'message' => 'Data fetched successfully'
-        ]);
+        return json_encode(['exists' => $exists]);
     }
 
     return json_encode([
@@ -78,11 +58,64 @@ function handleGetMethod($request_data)
 
 function handlePostMethod($request_data)
 {
-    // Placeholder for POST logic (e.g. new registration)
+    if ($request_data === 'send_code' && isset($_POST['email']) && isset($_POST['name'])) {
+        $email = htmlspecialchars(trim($_POST['email']));
+        $name = htmlspecialchars(trim($_POST['name']));
+        $code = rand(100000, 999999);
+
+        // Store the code in session or DB
+        $_SESSION['verification_code'][$email] = $code;
+
+        $mailer = new \App\Helper\Mailer();
+        $sent = $mailer->sendVerificationCode($email, $name, $code);
+
+        return json_encode([
+            'status' => $sent ? 200 : 500,
+            'message' => $sent ? 'Verification code sent' : 'Failed to send email',
+            'code' => $sent ? $code : null
+        ]);
+    }
+
     return json_encode([
-        'status' => 501,
-        'message' => 'POST method not implemented yet'
+        'status' => 400,
+        'message' => 'Missing or invalid request data'
     ]);
+}
+
+function handleSendVerificationCode()
+{
+    $input = json_decode(file_get_contents("php://input"), true);
+    $email = filter_var($input['email'] ?? '', FILTER_VALIDATE_EMAIL);
+    $name  = htmlspecialchars(trim($input['name'] ?? '')); // Optional: name for email salutation
+
+    if (!$email) {
+        return json_encode(['success' => false, 'message' => 'Invalid email address.']);
+    }
+
+    $code = rand(100000, 999999);
+    $_SESSION['verification_code'] = $code;
+    $_SESSION['verification_email'] = $email;
+
+    $mailer = new Mailer();
+    $sent = $mailer->sendVerificationCode($email, $name ?: 'User', $code);
+
+    return json_encode([
+        'success' => $sent,
+        'message' => $sent ? 'Verification code sent.' : 'Failed to send verification code.'
+    ]);
+}
+
+function handleVerifyCode()
+{
+    $input = json_decode(file_get_contents("php://input"), true);
+    $code = trim($input['code'] ?? '');
+    $email = trim($input['email'] ?? '');
+
+    if ($_SESSION['verification_code'] === (int)$code && $_SESSION['verification_email'] === $email) {
+        return json_encode(['valid' => true]);
+    }
+
+    return json_encode(['valid' => false]);
 }
 
 function handleServerError(string $request_method)

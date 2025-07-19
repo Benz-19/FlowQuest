@@ -16,8 +16,7 @@ Route::get('/', [PagesController::class, 'renderLandingPage']);
 //Register
 Route::get('/register', [PagesController::class, 'renderRegisterPage']);
 Route::post('/process-registration', [AuthController::class, 'register']);
-// Example in your routing file
-Route::get('/api/user-email-check', [UserDataApiController::class, 'getData']);
+
 //Login
 Route::get('/login', [PagesController::class, 'renderLoginPage']);
 // User Role Selection

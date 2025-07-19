@@ -27,22 +27,54 @@ abstract class BaseUser extends DB implements UserInterface
     }
 
     /**
-     * The isUser method is resposible for determining if a user exists
-     * @param string $user_email is used to search of a user exists
-     * @param return bool true | false
+     * Determine if a user exists
+     * @param string $user_email
+     * @return bool
      */
     public function isUser(string $user_email): ?bool
     {
         try {
-            $query = "SELECT * FROM users WHERE email=:email LIMIT 1";
+            $query = "SELECT * FROM users WHERE email = :email LIMIT 1";
             $params = [':email' => $user_email];
             $result = $this->fetchSingleData($query, $params);
-            if ($result === null) {
-                return false; // if user does not exists
-            }
-            return true;
+            return $result !== null;
         } catch (PDOException | Exception $error) {
             error_log("Error in BaseUser::isUser - " . $error->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Check if a user's account is verified
+     * @param string $email
+     * @return bool
+     */
+    public function isVerified(string $email): ?bool
+    {
+        try {
+            $query = "SELECT is_verified FROM users WHERE email = :email LIMIT 1";
+            $params = [':email' => $email];
+            $result = $this->fetchSingleData($query, $params);
+            return isset($result['is_verified']) && $result['is_verified'] == 1;
+        } catch (PDOException | Exception $e) {
+            error_log("Error in BaseUser::isVerified - " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Mark a user's account as verified
+     * @param string $email
+     * @return bool
+     */
+    public function verifyUser(string $email): bool
+    {
+        try {
+            $query = "UPDATE users SET is_verified = 1 WHERE email = :email";
+            $params = [':email' => $email];
+            return $this->execute($query, $params);
+        } catch (PDOException | Exception $e) {
+            error_log("Error in BaseUser::verifyUser - " . $e->getMessage());
             return false;
         }
     }

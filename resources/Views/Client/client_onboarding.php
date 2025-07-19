@@ -39,7 +39,6 @@
             }
         }
 
-
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #000;
@@ -62,7 +61,6 @@
 </head>
 
 <body class="bg-black text-white min-h-screen w-screen flex flex-col items-center px-6 overflow-hidden pt-6">
-
     <header class="absolute top-6 left-6 text-2xl font-bold">
         <a href="/">
             <h1 class="text-3xl md:text-4xl font-bold mb-10 slide-in">FlowQuest</h1>
@@ -96,6 +94,13 @@
                 placeholder: "john@company.com"
             },
             {
+                label: "Enter the 6-digit verification code sent to your email",
+                name: "email_code",
+                type: "text",
+                placeholder: "123456",
+                isCodeStep: true
+            },
+            {
                 label: "Create a password",
                 name: "password",
                 type: "password",
@@ -125,42 +130,34 @@
         function renderStep(index) {
             const q = questions[index];
             wrapper.innerHTML = `
-        <div class="step active">
-            <label class="block text-lg font-medium mb-2">${q.label}</label>
-            ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
-            <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
-            <p id="errorMessage" class="text-red-600 text-sm mt-2 hidden"></p>
-        </div>
-    `;
+                <div class="step active">
+                    <label class="block text-lg font-medium mb-2">${q.label}</label>
+                    ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
+                    <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
+                    <p id="errorMessage" class="text-red-600 text-sm mt-2 hidden"></p>
+                </div>
+            `;
             prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
             nextBtn.style.display = 'inline-block';
             submitBtn.style.display = 'none';
         }
 
-
         function renderReview() {
-            const hiddenFields = Object.entries(responses).map(([key, value]) => `
-            <input type="hidden" name="${key}" value="${value}">
-        `).join("");
-
+            const hiddenFields = Object.entries(responses).map(([key, value]) => `<input type="hidden" name="${key}" value="${value}">`).join("");
             wrapper.innerHTML = `
-            <form action="/process-registration" method="POST" class="step active">
-                <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
-                <ul class="space-y-2 text-sm mb-4">
-                    ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
-                </ul>
-
-                <input type="hidden" name="user_type" value="client">
-                ${hiddenFields}
-
-                <div class="flex justify-between mt-6">
-                    <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
-                    <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
-                </div>
-            </form>
-        `;
-
+                <form action="/process-registration" method="POST" class="step active">
+                    <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
+                    <ul class="space-y-2 text-sm mb-4">
+                        ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
+                    </ul>
+                    <input type="hidden" name="user_type" value="client">
+                    ${hiddenFields}
+                    <div class="flex justify-between mt-6">
+                        <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
+                        <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
+                    </div>
+                </form>
+            `;
             nextBtn.style.display = 'none';
             prevBtn.style.display = 'none';
             submitBtn.style.display = 'none';
@@ -178,36 +175,70 @@
             const name = questions[currentStep].name;
             const value = input.value.trim();
 
-            // Email uniqueness check
+            // Email uniqueness + verification code send
             if (currentStep === 1) {
-                const loader = document.createElement('div');
-                loader.id = 'loader';
-                loader.innerHTML = `
-            <div class="flex items-center mt-2 text-sm">
-                <svg class="animate-spin mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
-                Checking email...
-            </div>
-        `;
-                wrapper.appendChild(loader);
-
                 try {
                     const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(value)}&user_type=client`);
-                    const data = await res.json();
-                    document.getElementById('loader')?.remove();
+                    const text = await res.text();
+                    console.log(text); // TEMP: view raw output
+                    const data = JSON.parse(text); // then parse
+
 
                     if (data.exists) {
                         showError("❌ This email already exists. Try another one.");
                         return;
                     }
+                    const send = await fetch('/api/send-verification-code?send_code=true', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `email=${encodeURIComponent(value)}&name=${encodeURIComponent(responses.name)}`
+                    });
+
+                    const sent = await send.json();
+
+                    if (!sent.success) {
+                        showError("Failed to send verification email. Try again later.");
+                        return;
+                    }
+
+                    responses[name] = value;
+                    currentStep++;
+                    renderStep(currentStep);
+                    return;
                 } catch (err) {
-                    showError("Server error while checking email. Try again later.");
-                    document.getElementById('loader')?.remove();
+                    showError("Network/server error. Try again later.");
                     return;
                 }
             }
+
+            // Verify email code step
+            if (questions[currentStep].isCodeStep) {
+                const codeInput = value;
+                const emailToVerify = responses.email; // Get previously saved email
+
+                try {
+                    const verify = await fetch('/api/verify-code', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `email=${encodeURIComponent(emailToVerify)}&code=${encodeURIComponent(codeInput)}`
+                    });
+
+                    const result = await verify.json();
+
+                    if (!result.valid) {
+                        showError("Incorrect code. Failed to verify your email.");
+                        return;
+                    }
+                } catch (err) {
+                    showError("Verification failed due to network error.");
+                    return;
+                }
+            }
+
 
             responses[name] = value;
             currentStep++;
@@ -217,7 +248,6 @@
                 renderReview();
             }
         });
-
 
         prevBtn.addEventListener('click', () => {
             if (currentStep === questions.length) {
@@ -232,21 +262,16 @@
         function showError(message) {
             const errorEl = document.getElementById('errorMessage');
             if (!errorEl) return;
-
             errorEl.textContent = message;
             errorEl.classList.remove('hidden');
-
-            // Hide after 6 seconds
             setTimeout(() => {
                 errorEl.classList.add('hidden');
                 errorEl.textContent = '';
             }, 6000);
         }
 
-
         renderStep(currentStep);
     </script>
-
 </body>
 
 </html>

@@ -1,5 +1,5 @@
 <?php
-// dir: App/Http/Controllers/Api
+// App/Http/Controllers/Api/UserDataApiController.php
 
 namespace App\Http\Controllers\Api;
 
@@ -9,14 +9,37 @@ class UserDataApiController
     {
         require_once __DIR__ . '/../../../Helper/api_functions.php';
 
-        // Check if request includes `email` param for existence check
+        // Verification code email
+        if (isset($_GET['send_code'])) {
+            return processRequest('send-verification-code');
+        }
+
+        // Code verification check
+        if (isset($_GET['verify_code'])) {
+            return processRequest('verify-code');
+        }
+
+        // Email check (e.g. ?email=abc@example.com)
         if (isset($_GET['email'])) {
             return processRequest('user-email-check');
         }
 
-        // Otherwise, default table data fetch (e.g. 'users')
+        // Generic fallback (e.g. /api/users)
         return processRequest('users');
     }
 
-    public function postData() {}
+    public function postData()
+    {
+        require_once __DIR__ . '/../../../Helper/api_functions.php';
+
+        if (isset($_GET['send_code'])) {
+            return processRequest('send_code');
+        }
+
+        // fallback
+        return json_encode([
+            'status' => 400,
+            'message' => 'Missing POST parameter'
+        ]);
+    }
 }
