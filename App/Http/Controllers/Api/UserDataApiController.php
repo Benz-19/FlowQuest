@@ -36,6 +36,10 @@ class UserDataApiController
             return processRequest('send_code');
         }
 
+        if (isset($_GET['verify_code'])) {
+            return processRequest('send_code');
+        }
+
         // fallback
         return json_encode([
             'status' => 400,

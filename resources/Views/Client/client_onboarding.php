@@ -94,9 +94,10 @@
                 placeholder: "john@company.com"
             },
             {
-                label: "Enter the 6-digit verification code sent to your email",
+                label: "Verify your account",
                 name: "email_code",
                 type: "text",
+                note: "Enter the 6-digit code sent to your email address",
                 placeholder: "123456",
                 isCodeStep: true
             },
@@ -130,34 +131,37 @@
         function renderStep(index) {
             const q = questions[index];
             wrapper.innerHTML = `
-                <div class="step active">
-                    <label class="block text-lg font-medium mb-2">${q.label}</label>
-                    ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
-                    <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
-                    <p id="errorMessage" class="text-red-600 text-sm mt-2 hidden"></p>
-                </div>
-            `;
+            <div class="step active">
+                <label class="block text-lg font-medium mb-2">${q.label}</label>
+                ${q.note ? `<p class='text-sm text-red-500 mt-2'>${q.note}</p>` : ''}
+                <input id="stepInput" type="${q.type}" name="${q.name}" placeholder="${q.placeholder}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-black">
+                <p id="errorMessage" class="text-red-600 text-sm mt-2 hidden"></p>
+            </div>
+        `;
             prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
             nextBtn.style.display = 'inline-block';
             submitBtn.style.display = 'none';
         }
 
         function renderReview() {
-            const hiddenFields = Object.entries(responses).map(([key, value]) => `<input type="hidden" name="${key}" value="${value}">`).join("");
+            const hiddenFields = Object.entries(responses).map(([key, value]) =>
+                `<input type="hidden" name="${key}" value="${value}">`
+            ).join("");
+
             wrapper.innerHTML = `
-                <form action="/process-registration" method="POST" class="step active">
-                    <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
-                    <ul class="space-y-2 text-sm mb-4">
-                        ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
-                    </ul>
-                    <input type="hidden" name="user_type" value="client">
-                    ${hiddenFields}
-                    <div class="flex justify-between mt-6">
-                        <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
-                        <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
-                    </div>
-                </form>
-            `;
+            <form action="/process-registration" method="POST" class="step active">
+                <h2 class="text-xl font-bold mb-4">Review Your Info</h2>
+                <ul class="space-y-2 text-sm mb-4">
+                    ${questions.map(q => `<li><strong>${q.label}</strong>: ${responses[q.name]}</li>`).join('')}
+                </ul>
+                <input type="hidden" name="user_type" value="client">
+                ${hiddenFields}
+                <div class="flex justify-between mt-6">
+                    <button type="button" onclick="prevStep()" class="bg-gray-200 px-4 py-2 rounded">Previous</button>
+                    <button type="submit" name="submitBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Now</button>
+                </div>
+            </form>
+        `;
             nextBtn.style.display = 'none';
             prevBtn.style.display = 'none';
             submitBtn.style.display = 'none';
@@ -175,19 +179,18 @@
             const name = questions[currentStep].name;
             const value = input.value.trim();
 
-            // Email uniqueness + verification code send
+            // Step: Check email uniqueness & send code
             if (currentStep === 1) {
                 try {
                     const res = await fetch(`/api/user-email-check?email=${encodeURIComponent(value)}&user_type=client`);
                     const text = await res.text();
-                    console.log(text); // TEMP: view raw output
-                    const data = JSON.parse(text); // then parse
-
+                    const data = JSON.parse(text);
 
                     if (data.exists) {
                         showError("❌ This email already exists. Try another one.");
                         return;
                     }
+
                     const send = await fetch('/api/send-verification-code?send_code=true', {
                         method: 'POST',
                         headers: {
@@ -198,7 +201,7 @@
 
                     const sent = await send.json();
 
-                    if (!sent.success) {
+                    if (sent.status !== 200) {
                         showError("Failed to send verification email. Try again later.");
                         return;
                     }
@@ -207,38 +210,36 @@
                     currentStep++;
                     renderStep(currentStep);
                     return;
+
                 } catch (err) {
                     showError("Network/server error. Try again later.");
                     return;
                 }
             }
 
-            // Verify email code step
+            // Step: Verify code
             if (questions[currentStep].isCodeStep) {
-                const codeInput = value;
-                const emailToVerify = responses.email; // Get previously saved email
-
                 try {
-                    const verify = await fetch('/api/verify-code', {
+                    const verify = await fetch('/api/verify-code?verify_code=true', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `email=${encodeURIComponent(emailToVerify)}&code=${encodeURIComponent(codeInput)}`
+                        body: `email=${encodeURIComponent(responses.email)}&code=${encodeURIComponent(value)}&verify_code=true`
                     });
 
                     const result = await verify.json();
-
+                    console.log(result);
                     if (!result.valid) {
                         showError("Incorrect code. Failed to verify your email.");
                         return;
                     }
+
                 } catch (err) {
-                    showError("Verification failed due to network error.");
+                    showError("Verification failed. Try again.");
                     return;
                 }
             }
-
 
             responses[name] = value;
             currentStep++;
@@ -272,6 +273,7 @@
 
         renderStep(currentStep);
     </script>
+
 </body>
 
 </html>

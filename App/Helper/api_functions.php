@@ -63,24 +63,38 @@ function handlePostMethod($request_data)
         $name = htmlspecialchars(trim($_POST['name']));
         $code = rand(100000, 999999);
 
-        // Store the code in session or DB
+        // Store the code in session
         $_SESSION['verification_code'][$email] = $code;
 
         $mailer = new \App\Helper\Mailer();
         $sent = $mailer->sendVerificationCode($email, $name, $code);
 
         return json_encode([
+            'success' => $sent,
             'status' => $sent ? 200 : 500,
-            'message' => $sent ? 'Verification code sent' : 'Failed to send email',
-            'code' => $sent ? $code : null
+            'message' => $sent ? 'Verification code sent' : 'Failed to send email'
+        ]);
+    } elseif ($request_data === 'verify_code' && isset($_POST['email']) && isset($_POST['code'])) {
+        $email = htmlspecialchars(trim($_POST['email']));
+        $code = trim($_POST['code']);
+
+        $storedCode = $_SESSION['verification_code'][$email] ?? null;
+        $isValid = $storedCode && $storedCode === $code;
+
+        return json_encode([
+            'valid' => $isValid
         ]);
     }
 
     return json_encode([
         'status' => 400,
-        'message' => 'Missing or invalid request data'
+        'message' => 'Missing or invalid request data',
+        'request_data' => $request_data,
+        'email' => $_POST['email'],
+        'code' => $_POST['code'],
     ]);
 }
+
 
 function handleSendVerificationCode()
 {
