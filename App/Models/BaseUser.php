@@ -82,11 +82,56 @@ abstract class BaseUser extends DB implements UserInterface
     public function register(array $params = [])
     {
         try {
+            // Start transaction
+            $this->beginTransaction();
+
+            $client_details = [
+                ':company_name' => $params[':company_name'],
+                ':service_requested' => $params[':service_requested']
+            ];
+            unset($params[':company_name']);
+            unset($params[':service_requested']);
+            // Insert user
             $this->manageUser('create', $params);
-        } catch (PDOException | Exception | PDOStatement $error) {
+
+            // Get the last inserted user_id
+            $email = htmlspecialchars(trim($params[':email']));
+            $userId = $this->getUserIdByEmail($email);
+
+            $client_details[':user_id'] = $userId;
+            // Insert into the appropriate details table
+            $userType = $params[':user_type'];
+
+            if ($userType === 'freelancer') {
+                $detailsQuery = "INSERT INTO freelancer_details (user_id, business_name, service_rendered, experience)
+                             VALUES (:user_id, :business_name, :service_rendered, :experience)";
+                $this->execute($detailsQuery, [
+                    ':user_id' => $userId,
+                    ':business_name' => $params[':business_name'],
+                    ':service_rendered' => $params[':service_rendered'],
+                    ':experience' => $params[':experience'],
+                ]);
+            } elseif ($userType === 'client') {
+                $detailsQuery = "INSERT INTO client_details (user_id, company_name, service_requested)
+                             VALUES (:user_id, :company_name, :service_requested)";
+                $this->execute($detailsQuery, [
+                    ':user_id' => $userId,
+                    ':company_name' => $client_details[':company_name'],
+                    ':service_requested' => $client_details[':service_requested']
+                ]);
+            }
+
+            // Commit transaction
+            $this->commit();
+            return true;
+        } catch (PDOException | Exception $error) {
+            // Rollback on error
+            $this->rollBack();
             error_log('Error in BaseUser::register - ' . $error->getMessage());
+            return false;
         }
     }
+
 
     /**
      * The getUserDetailsById method gets a specific user data in relations to the users and user_details table
@@ -125,6 +170,21 @@ abstract class BaseUser extends DB implements UserInterface
                       JOIN {$this->detailsTable} AS d ON u.id = d.user_id";
 
             return $this->fetchAllData($query);
+        } catch (PDOException | Exception $error) {
+            error_log("Error in BaseUser::getAllUserData - " . $error->getMessage());
+            return null;
+        }
+    }
+
+    public function getUserIdByEmail(string $user_email): ?string
+    {
+        try {
+            $query = "SELECT id FROM users WHERE email=:email LIMIT 1";
+            $params = [
+                ":email" => htmlspecialchars(trim($user_email))
+            ];
+            $id =  $this->execute($query, $params);
+            return $id;
         } catch (PDOException | Exception $error) {
             error_log("Error in BaseUser::getAllUserData - " . $error->getMessage());
             return null;

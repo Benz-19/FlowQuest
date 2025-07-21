@@ -5,45 +5,27 @@ namespace App\Http\Controllers\Api;
 
 class UserDataApiController
 {
-    public function getData()
+    public function checkEmail()
     {
         require_once __DIR__ . '/../../../Helper/api_functions.php';
-
-        // Verification code email
-        if (isset($_GET['send_code'])) {
-            return processRequest('send-verification-code');
-        }
-
-        // Code verification check
-        if (isset($_GET['verify_code'])) {
-            return processRequest('verify-code');
-        }
-
-        // Email check (e.g. ?email=abc@example.com)
-        if (isset($_GET['email'])) {
-            return processRequest('user-email-check');
-        }
-
-        // Generic fallback (e.g. /api/users)
-        return processRequest('users');
+        echo processRequest('user-email-check');
     }
 
-    public function postData()
+    public function sendCode()
     {
         require_once __DIR__ . '/../../../Helper/api_functions.php';
+        echo processRequest('send_code');
+    }
 
-        if (isset($_GET['send_code'])) {
-            return processRequest('send_code');
-        }
+    public function verifyCode()
+    {
+        require_once __DIR__ . '/../../../Helper/api_functions.php';
+        echo processRequest('verify_code');
+    }
 
-        if (isset($_GET['verify_code'])) {
-            return processRequest('send_code');
-        }
-
-        // fallback
-        return json_encode([
-            'status' => 400,
-            'message' => 'Missing POST parameter'
-        ]);
+    public function registerUser()
+    {
+        require_once __DIR__ . '/../../../Helper/api_functions.php';
+        echo processRequest('register_user');
     }
 }

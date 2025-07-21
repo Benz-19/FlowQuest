@@ -1,0 +1,11 @@
+Array
+(
+    [name] => Tommy
+    [email] => ugwukingsley2019@gmail.com
+    [email_code] => 190119
+    [password] => 55555
+    [company] => erer
+    [service] => dev
+    [is_verified] => 1
+    [user_type] => client
+)

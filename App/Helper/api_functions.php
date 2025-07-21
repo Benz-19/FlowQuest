@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Client;
 use App\Models\Freelancer;
 use App\Helper\Mailer;
+use App\Http\Controllers\Auth\AuthController;
 
 function processRequest($request_data)
 {
@@ -74,24 +75,58 @@ function handlePostMethod($request_data)
             'status' => $sent ? 200 : 500,
             'message' => $sent ? 'Verification code sent' : 'Failed to send email'
         ]);
-    } elseif ($request_data === 'verify_code' && isset($_POST['email']) && isset($_POST['code'])) {
+    }
+
+    if ($request_data === 'verify_code' && isset($_POST['email']) && isset($_POST['code'])) {
         $email = htmlspecialchars(trim($_POST['email']));
         $code = trim($_POST['code']);
 
         $storedCode = $_SESSION['verification_code'][$email] ?? null;
-        $isValid = $storedCode && $storedCode === $code;
+        $isValid = $storedCode && ((string)$storedCode === $code); // Cast both to string for safe compare
 
         return json_encode([
             'valid' => $isValid
         ]);
     }
 
+    if ($request_data === 'register_user') {
+        $controller = new AuthController();
+
+        $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+        $username = htmlspecialchars(trim($_POST['name']));
+        $password = password_hash(htmlspecialchars(trim($_POST['password'])), PASSWORD_DEFAULT);
+        $user_type = htmlspecialchars(trim($_POST['user_type'] ?? 'client'));
+        $email_verified = isset($_POST['is_verified']) ? 1 : 0;
+
+        $params = [
+            ':username' => $username,
+            ':email' => $email,
+            ':password' => $password,
+            ':user_type' => $user_type,
+            ':email_verified' => $email_verified,
+            ':status' => 'inactive'
+        ];
+
+        // Add these conditionally for clients
+        if ($user_type === 'client') {
+            $params[':company_name'] = htmlspecialchars(trim($_POST['company']));
+            $params[':service_requested'] = htmlspecialchars(trim($_POST['service']));
+        }
+
+        $result = $controller->register($params);
+
+        unset($_SESSION['verification_code'][$email]);
+
+        return json_encode([
+            'status' => $result ? 200 : 400,
+            'message' => $result ? 'Registration Success' : 'Registration Failure...'
+        ]);
+    }
+
+
     return json_encode([
         'status' => 400,
-        'message' => 'Missing or invalid request data',
-        'request_data' => $request_data,
-        'email' => $_POST['email'],
-        'code' => $_POST['code'],
+        'message' => 'Missing or invalid request data'
     ]);
 }
 

@@ -105,4 +105,28 @@ class DB
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $res ?: null;
     }
+
+    // Added DB features
+    public function beginTransaction(): void
+    {
+        $this->verify_connection();
+        $this->conn->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->verify_connection();
+        $this->conn->commit();
+    }
+
+    public function rollBack(): void
+    {
+        $this->verify_connection();
+        $this->conn->rollBack();
+    }
+
+    public function lastInsertId(): string
+    {
+        return $this->conn->lastInsertId();
+    }
 }
