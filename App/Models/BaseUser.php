@@ -112,8 +112,9 @@ abstract class BaseUser extends DB implements UserInterface
             $this->manageUser('create', $params);
 
             // Get the last inserted user_id
-            $email = htmlspecialchars(trim($params[':email']));
-            $userId = $this->getUserIdByEmail($email); //or $userId = $this->lastInsertId();
+            // $email = htmlspecialchars(trim($params[':email']));
+            // $userId = $this->getUserIdByEmail($email);
+            $userId = $this->lastInsertId();
 
             $user_details[':user_id'] = $userId;
             // Insert into the appropriate details table
@@ -129,7 +130,7 @@ abstract class BaseUser extends DB implements UserInterface
                     ':experience' => $user_details[':experience'],
                 ]);
             } elseif ($userType === 'client') {
-                $detailsQuery = "INSERT INTO user_details (user_id, company_name, service_requested)
+                $detailsQuery = "INSERT INTO client_details (user_id, company_name, service_requested)
                              VALUES (:user_id, :company_name, :service_requested)";
                 $this->execute($detailsQuery, [
                     ':user_id' => $userId,

@@ -1,31 +1,38 @@
 <?php
-// App/Http/Controllers/Api/UserDataApiController.php
+// File: App/Http/Controllers/Api/UserDataApiController.php
 
 namespace App\Http\Controllers\Api;
+
+use App\Services\Auth\AuthService;
+
+
 
 class UserDataApiController
 {
     public function checkEmail()
     {
-        require_once __DIR__ . '/../../../Helper/api_functions.php';
-        echo processRequest('user-email-check');
+        $email = $_GET['email'] ?? '';
+        $user_type = $_GET['user_type'] ?? '';
+        echo json_encode(AuthService::checkEmail($email, $user_type));
     }
 
     public function sendCode()
     {
-        require_once __DIR__ . '/../../../Helper/api_functions.php';
-        echo processRequest('send_code');
+        $email = $_POST['email'] ?? '';
+        $name  = $_POST['name'] ?? '';
+        echo json_encode(AuthService::sendCode($email, $name));
     }
 
     public function verifyCode()
     {
-        require_once __DIR__ . '/../../../Helper/api_functions.php';
-        echo processRequest('verify_code');
+        $email = $_POST['email'] ?? '';
+        $code = $_POST['code'] ?? '';
+        echo json_encode(AuthService::verifyCode($email, $code));
     }
 
     public function registerUser()
     {
-        require_once __DIR__ . '/../../../Helper/api_functions.php';
-        echo processRequest('register_user');
+        $data = $_POST;
+        echo json_encode(AuthService::registerUser($data));
     }
 }
