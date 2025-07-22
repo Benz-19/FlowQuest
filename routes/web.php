@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use CustomRouter\Route;
 use App\Http\Controllers\Pages\PagesController;
 use App\Http\Controllers\Payments\PaymentsController;
+use App\Services\Auth\AuthService;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -19,6 +20,7 @@ Route::post('/process-registration', [AuthController::class, 'register']);
 
 //Login
 Route::get('/login', [PagesController::class, 'renderLoginPage']);
+Route::get('/process-login', [AuthService::class, 'login']);
 // User Role Selection
 Route::get('/register-freelancer', [PagesController::class, 'renderFreelancerOnboardingPage']);
 Route::get('/register-client', [PagesController::class, 'renderClientOnboardingPage']);

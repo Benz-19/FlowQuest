@@ -47,7 +47,7 @@
         <h2 class="text-2xl font-semibold mb-2 text-center">Welcome Back</h2>
         <p class="text-sm text-center text-gray-600 mb-6">Login to manage your subscriptions & invoices</p>
 
-        <form>
+        <form action="/process-login" method="POST">
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm mb-2">Email</label>
                 <input type="email" placeholder="you@example.com"

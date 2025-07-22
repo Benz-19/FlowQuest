@@ -112,6 +112,7 @@ class AuthService
         $result = $controller->login($params);
 
         if ($result['response'] === false || $result === false) {
+            $_SESSION['error'] = "Invalid Credentials";
             return [
                 'status' => 401,
                 'message' => 'Invalid Credentials'
