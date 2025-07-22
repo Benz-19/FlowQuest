@@ -150,6 +150,44 @@ abstract class BaseUser extends DB implements UserInterface
         }
     }
 
+    public function login(array $params = []): bool
+    {
+        $email = $params['email'];
+        $password = $params['password'];
+
+        if (!$this->isUser($email)) {
+            return false;
+        }
+
+        try {
+            $query = "SELECT * FROM users WHERE email=:email";
+            $params = [':email' => $email];
+            $result = $this->fetchSingleData($query, $params);
+
+            if (password_verify($password, $result['password'])) {
+                return true;
+            }
+            error_log('password verification failed.');
+            return false;
+        } catch (PDOException | Exception $error) {
+            error_log('Error in BaseUser::login - ' . $error->getMessage());
+            return false;
+        }
+    }
+
+    public function getUserType(string $email)
+    {
+        try {
+            $query = "SELECT user_type FROM users WHERE email=:email LIMIT 1";
+            $params = [':email' => $email];
+            $res = $this->fetchSingleData($query, $params);
+
+            return $res;
+        } catch (PDOException | Exception $error) {
+            error_log('Error in BaseUser::login - ' . $error->getMessage());
+            return;
+        }
+    }
 
     /**
      * The getUserDetailsById method gets a specific user data in relations to the users and user_details table

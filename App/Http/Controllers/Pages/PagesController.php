@@ -47,4 +47,25 @@ class PagesController
         $controller = new BaseController;
         $controller->renderView('Client/client_onboarding');
     }
+
+    //
+    public function renderAdminDashboardPage()
+    {
+        $controller = new BaseController;
+        $controller->renderView('Admin/admin_dashboard');
+    }
+
+    //
+    public function renderClientDashboardPage()
+    {
+        $controller = new BaseController;
+        $controller->renderView('Client/client_dashboard');
+    }
+
+    //
+    public function renderFreelancerDashboardPage()
+    {
+        $controller = new BaseController;
+        $controller->renderView('Freelancer/freelancer_dashboard');
+    }
 }

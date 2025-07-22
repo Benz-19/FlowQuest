@@ -91,4 +91,48 @@ class AuthService
             'message' => $result ? 'Registration Success' : 'Registration Failure...'
         ];
     }
+
+    public static function login()
+    {
+        if (!isset($_POST['loginBtn'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $controller = new AuthController();
+
+        $email = htmlspecialchars(trim($_POST['email']));
+        $password = htmlspecialchars(trim($_POST['password']));
+
+        $params = [
+            'email' => $email,
+            'password' => $password
+        ];
+
+        $result = $controller->login($params);
+
+        if ($result['response'] === false || $result === false) {
+            return [
+                'status' => 401,
+                'message' => 'Invalid Credentials'
+            ];
+        }
+
+        $_SESSION['user_details'] = $result['user_details'];
+
+        if ($result['user_type'] === 'client') {
+            header('Location: /client-dashboard');
+            exit;
+        } elseif ($result['user_type'] === 'freelancer') {
+            header('Location: /freelancer-dashboard');
+            exit;
+        } else {
+            header('Location: /admin-dashboard');
+            exit;
+        }
+
+        error_log('Something failed at AuthService::login. Failed to open a page');
+        header('Location: /login');
+        exit;
+    }
 }

@@ -2,11 +2,12 @@
 //dir App/Http/Cpntollers/Auth
 namespace App\Http\Controllers\Auth;
 
+use Exception;
+use PDOException;
+use App\Models\User;
 use App\Models\Admin;
 use App\Models\Client;
 use App\Models\Freelancer;
-use Exception;
-use PDOException;
 
 header('Content-Type: application/json');
 
@@ -55,9 +56,31 @@ class AuthController
         }
     }
 
-    public function login()
+    public function login(array $data = [])
     {
-        // login
+        // need user type and details
+        $params = [
+            'email' => $data['email'],
+            'password' => $data['password']
+        ];
+
+        $user = new User();
+        $response = $user->login($params);
+        $user_id = $user->getUserIdByEmail($data['email']);
+        $user_details = $user->getUserDetailsById($user_id);
+        $user_type = $user_details['user_type'];
+
+        $user_info = [];
+        if ($response !== false) {
+            $user_info = [
+                'response' => $response, //type bool true | false
+                'user_type' => $user_type,
+                'user_details' => $user_details
+            ];
+
+            return $user_info;
+        }
+        return $response;
     }
 
     public function logout()

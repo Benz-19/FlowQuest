@@ -23,6 +23,15 @@ Route::get('/login', [PagesController::class, 'renderLoginPage']);
 Route::get('/register-freelancer', [PagesController::class, 'renderFreelancerOnboardingPage']);
 Route::get('/register-client', [PagesController::class, 'renderClientOnboardingPage']);
 
+
+// Admin Functionalities
+Route::get('/admin-dashboard', [PagesController::class, 'renderAdminDashboardPage']);
+
+// Client Functionalities
+Route::get('/client-dashboard', [PagesController::class, 'renderClientDashboardPage']);
+
+// Freelancer Functionalities
+Route::get('/freelancer-dashboard', [PagesController::class, 'renderFreelancerDashboardPage']);
 // Test page
 Route::get('/test', [PagesController::class, 'renderLandingPage']);
 Route::get('/test-pages', [PagesController::class, 'renderTestingPage']);
