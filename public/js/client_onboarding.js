@@ -1,45 +1,20 @@
-const questions = [{
-    label: "What's your full name?",
-    name: "name",
-    type: "text",
-    placeholder: "Johnny Nash"
-},
-{
-    label: "What's your work email?",
-    name: "email",
-    type: "email",
-    note: "*Must be a valid work email",
-    placeholder: "john@company.com"
-},
-{
-    label: "Verify your account",
-    name: "email_code",
-    type: "text",
-    note: "Enter the 6-digit code sent to your email address",
-    placeholder: "123456",
-    isCodeStep: true
-},
-{
-    label: "Create a password",
-    name: "password",
-    type: "password",
-    placeholder: "••••••••"
-},
-{
-    label: "Your company name (optional)",
-    name: "company",
-    type: "text",
-    placeholder: "Company Inc."
-},
-{
-    label: "What service are you looking for?",
-    name: "service",
-    type: "text",
-    placeholder: "e.g. Accounting, Web Development..."
-},
-];
-
+let questions = [];
 let currentStep = 0;
+
+
+window.addEventListener("load", () => {
+    fetch('/questions/client_onboarding.json')
+        .then(res => res.json())
+        .then(data => {
+            questions = data; // Now steps is filled with the question
+            renderStep(currentStep); // Call your existing function to start rendering
+        })
+        .catch(err => {
+            console.error("Failed to load questions:", err);
+        });
+});
+
+
 const responses = {};
 const wrapper = document.getElementById('stepWrapper');
 const nextBtn = document.getElementById('nextBtn');
@@ -239,4 +214,3 @@ function showError(message) {
     }, 6000);
 }
 
-renderStep(currentStep);

@@ -2,15 +2,20 @@ window.addEventListener("load", () => {
     renderStep();
 });
 
-const steps = [
-    { question: "What’s your full name?", name: "name", placeholder: "Johnny Test", type: "text", icon: "👤" },
-    { question: "What’s your work email?", name: "email", placeholder: "name@company.com", type: "email", icon: "📧", hint: "Use your work email" },
-    { question: "Enter the 6-digit code sent to your email", name: "email_code", placeholder: "123456", type: "text", icon: "🔑", isCodeStep: true },
-    { question: "Create a secure password", name: "password", placeholder: "••••••••", type: "password", icon: "🔒" },
-    { question: "What services do you offer?", name: "services", placeholder: "e.g. UI/UX, Web Dev, Marketing", type: "text", icon: "🛠" },
-    { question: "What’s your business name?", name: "business", placeholder: "Optional – FlowQuest Studios", type: "text", icon: "🏢" },
-    { question: "How experienced are you?", name: "experience", placeholder: "1, 2, 3", type: "text", icon: "📈", isExperienceQuestion: true },
-];
+let steps = [];
+
+window.addEventListener("load", () => {
+    fetch('/questions/freelancer_onboarding.json')
+        .then(res => res.json())
+        .then(data => {
+            steps = data;       // Now steps is filled with the questions
+            renderStep();       // render steps after loading the questions
+        })
+        .catch(err => {
+            console.error("Failed to load questions:", err);
+        });
+});
+
 
 let currentStep = 0;
 const answers = {};
