@@ -85,20 +85,37 @@ abstract class BaseUser extends DB implements UserInterface
             // Start transaction
             $this->beginTransaction();
 
-            $client_details = [
-                ':company_name' => $params[':company_name'],
-                ':service_requested' => $params[':service_requested']
-            ];
-            unset($params[':company_name']);
-            unset($params[':service_requested']);
+            $user_details = [];
+
+            // remove
+            if ($params[':user_type'] === 'client') {
+                $user_details = [
+                    ':company_name' => $params[':company_name'],
+                    ':service_requested' => $params[':service_requested']
+                ];
+                unset($params[':company_name']);
+                unset($params[':service_requested']);
+            }
+
+            if ($params[':user_type'] === 'freelancer') {
+                $user_details = [
+                    ':business_name' => $params[':business_name'],
+                    ':service_rendered' => $params[':service_rendered'],
+                    ':experience' => $params[':experience']
+                ];
+                unset($params[':business_name']);
+                unset($params[':service_rendered']);
+                unset($params[':experience']);
+            }
+
             // Insert user
             $this->manageUser('create', $params);
 
             // Get the last inserted user_id
             $email = htmlspecialchars(trim($params[':email']));
-            $userId = $this->getUserIdByEmail($email);
+            $userId = $this->getUserIdByEmail($email); //or $userId = $this->lastInsertId();
 
-            $client_details[':user_id'] = $userId;
+            $user_details[':user_id'] = $userId;
             // Insert into the appropriate details table
             $userType = $params[':user_type'];
 
@@ -107,17 +124,17 @@ abstract class BaseUser extends DB implements UserInterface
                              VALUES (:user_id, :business_name, :service_rendered, :experience)";
                 $this->execute($detailsQuery, [
                     ':user_id' => $userId,
-                    ':business_name' => $params[':business_name'],
-                    ':service_rendered' => $params[':service_rendered'],
-                    ':experience' => $params[':experience'],
+                    ':business_name' => $user_details[':business_name'],
+                    ':service_rendered' => $user_details[':service_rendered'],
+                    ':experience' => $user_details[':experience'],
                 ]);
             } elseif ($userType === 'client') {
-                $detailsQuery = "INSERT INTO client_details (user_id, company_name, service_requested)
+                $detailsQuery = "INSERT INTO user_details (user_id, company_name, service_requested)
                              VALUES (:user_id, :company_name, :service_requested)";
                 $this->execute($detailsQuery, [
                     ':user_id' => $userId,
-                    ':company_name' => $client_details[':company_name'],
-                    ':service_requested' => $client_details[':service_requested']
+                    ':company_name' => $user_details[':company_name'],
+                    ':service_requested' => $user_details[':service_requested']
                 ]);
             }
 
@@ -158,7 +175,7 @@ abstract class BaseUser extends DB implements UserInterface
     /**
      * The method below retrieves all the users data in relations to the users and user_details table
      * the user_details table consists of (admin_details, client_details, freelancer_etails)
-     * @param string $query is stores the SQL query needed to retrieve data
+     * @param string $query stores the SQL query needed to retrieve data
      */
     public function getAllUserData()
     {
@@ -176,6 +193,12 @@ abstract class BaseUser extends DB implements UserInterface
         }
     }
 
+
+    /**
+     * The method below retrieves all the users id using their email
+     * @param string $user_email stores the user's email
+     * @param string $query stores the SQL query needed to retrieve data
+     */
     public function getUserIdByEmail(string $user_email): ?string
     {
         try {

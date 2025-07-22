@@ -107,13 +107,20 @@ function handlePostMethod($request_data)
             ':status' => 'inactive'
         ];
 
-        // Add these conditionally for clients
+        // conditionally for client_details
         if ($user_type === 'client') {
             $params[':company_name'] = htmlspecialchars(trim($_POST['company']));
             $params[':service_requested'] = htmlspecialchars(trim($_POST['service']));
         }
 
-        $result = $controller->register($params);
+        // conditionally for freelancer_details
+        if ($user_type === 'freelancer') {
+            $params[':business_name'] = htmlspecialchars(trim($_POST['business']));
+            $params[':service_rendered'] = htmlspecialchars(trim($_POST['services']));
+            $params[':experience'] = htmlspecialchars(trim($_POST['experience']));
+        }
+
+        $result = $controller->register($params); //register the new user
 
         unset($_SESSION['verification_code'][$email]);
 
