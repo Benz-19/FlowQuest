@@ -52,20 +52,20 @@ class PagesController
     public function renderAdminDashboardPage()
     {
         $controller = new BaseController;
-        $controller->renderView('Admin/admin_dashboard');
+        $controller->renderView('Admin/dashboard');
     }
 
     //
     public function renderClientDashboardPage()
     {
         $controller = new BaseController;
-        $controller->renderView('Client/client_dashboard');
+        $controller->renderView('Client/dashboard');
     }
 
     //
     public function renderFreelancerDashboardPage()
     {
         $controller = new BaseController;
-        $controller->renderView('Freelancer/freelancer_dashboard');
+        $controller->renderView('Freelancer/dashboard');
     }
 }

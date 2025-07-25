@@ -160,7 +160,7 @@ abstract class BaseUser extends DB implements UserInterface
         }
 
         try {
-            $query = "SELECT * FROM users WHERE email=:email";
+            $query = "SELECT password FROM users WHERE email=:email Limit 1";
             $params = [':email' => $email];
             $result = $this->fetchSingleData($query, $params);
 

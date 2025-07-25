@@ -111,7 +111,8 @@ class AuthService
 
         $result = $controller->login($params);
 
-        if ($result['response'] === false || $result === false) {
+        $_SESSION['user_details'] = $result['user_details'];
+        if ($result['response'] === false) {
             $_SESSION['error'] = "Invalid Credentials";
             return [
                 'status' => 401,
@@ -119,7 +120,6 @@ class AuthService
             ];
         }
 
-        $_SESSION['user_details'] = $result['user_details'];
 
         if ($result['user_type'] === 'client') {
             header('Location: /client-dashboard');

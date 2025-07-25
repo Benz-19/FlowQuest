@@ -67,8 +67,15 @@ class AuthController
         $user = new User();
         $response = $user->login($params);
         $user_id = $user->getUserIdByEmail($data['email']);
+        $user_type = $user->getUserType($data['email'])['user_type'];
+
+        $user = match ($user_type) {
+            'admin' => new Admin(),
+            'client' => new Client(),
+            'freelancer' => new Freelancer()
+        };
+
         $user_details = $user->getUserDetailsById($user_id);
-        $user_type = $user_details['user_type'];
 
         $user_info = [];
         if ($response !== false) {

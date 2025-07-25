@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\Client;
 use App\Models\DB;
+use App\Models\User;
+use App\Services\Auth\AuthService;
 
 // use App\Http\Controllers\Api\UserDataApiController;
 
@@ -9,5 +12,10 @@ use App\Models\DB;
 // print_r($test_api->getData());
 // echo '</pre>';
 
-$id = (new DB)->execute("SELECT id FROM users WHERE email='kingsley@flowquest.io' LIMIT 1");
-echo $id['id'];
+// $id = (new DB)->execute("SELECT id FROM users WHERE email='kingsley@flowquest.io' LIMIT 1");
+// echo $id;
+$_POST['loginBtn'] = true;
+$_POST['email'] = 'kingsley@flowquest.io';
+$_POST['password'] = 55555;
+
+(new AuthService)->login();
