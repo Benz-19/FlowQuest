@@ -34,7 +34,7 @@ class PagesController
         $controller->renderView('Auth/login');
     }
 
-    //Login
+    //reset password
     public function renderPasswordResetPage()
     {
         $controller = new BaseController;
