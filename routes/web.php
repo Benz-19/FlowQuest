@@ -20,7 +20,11 @@ Route::post('/process-registration', [AuthController::class, 'register']);
 
 //Login
 Route::get('/login', [PagesController::class, 'renderLoginPage']);
-Route::get('/process-login', [AuthService::class, 'login']);
+Route::post('/process-login', [AuthService::class, 'login']);
+
+//reset password
+Route::get('/reset-password', [PagesController::class, 'renderPasswordResetPage']);
+Route::post('/reset-password', [AuthService::class, 'login']);
 // User Role Selection
 Route::get('/register-freelancer', [PagesController::class, 'renderFreelancerOnboardingPage']);
 Route::get('/register-client', [PagesController::class, 'renderClientOnboardingPage']);

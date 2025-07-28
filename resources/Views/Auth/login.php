@@ -50,16 +50,16 @@
         <form action="/process-login" method="POST">
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm mb-2">Email</label>
-                <input type="email" placeholder="you@example.com"
+                <input type="email" placeholder="you@example.com" name="email"
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-gray-300">
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm mb-2">Password</label>
-                <input type="password" placeholder="••••••••"
+                <input type="password" placeholder="••••••••" name="password"
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-gray-300">
             </div>
 
-            <button type="submit"
+            <button type="submit" name="loginBtn"
                 class="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition duration-300">
                 Sign In
             </button>
@@ -70,6 +70,13 @@
             <a href="/register"
                 class="text-blue-600 hover:underline inline-block transition-transform duration-300 hover:translate-x-1 hover:text-gray-800">
                 Register
+            </a>
+        </p>
+        <p class="text-center text-sm text-gray-600 mt-6">
+            Forget Password
+            <a href="/reset-password"
+                class="text-blue-600 hover:underline inline-block transition-transform duration-300 hover:translate-x-1 hover:text-gray-800">
+                reset
             </a>
         </p>
     </div>

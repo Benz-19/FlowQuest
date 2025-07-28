@@ -182,7 +182,7 @@ abstract class BaseUser extends DB implements UserInterface
             $params = [':email' => $email];
             $res = $this->fetchSingleData($query, $params);
 
-            return $res;
+            return $res['user_type'];
         } catch (PDOException | Exception $error) {
             error_log('Error in BaseUser::login - ' . $error->getMessage());
             return;

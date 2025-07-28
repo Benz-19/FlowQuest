@@ -67,7 +67,7 @@ class AuthController
         $user = new User();
         $response = $user->login($params);
         $user_id = $user->getUserIdByEmail($data['email']);
-        $user_type = $user->getUserType($data['email'])['user_type'];
+        $user_type = $user->getUserType($data['email']);
 
         $user = match ($user_type) {
             'admin' => new Admin(),
