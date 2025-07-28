@@ -243,10 +243,10 @@ abstract class BaseUser extends DB implements UserInterface
         try {
             $query = "SELECT id FROM users WHERE email=:email LIMIT 1";
             $params = [
-                ":email" => htmlspecialchars(trim($user_email))
+                ":email" => $user_email
             ];
-            $id =  $this->execute($query, $params);
-            return $id;
+            $id =  $this->fetchSingleData($query, $params);
+            return $id['id'];
         } catch (PDOException | Exception $error) {
             error_log("Error in BaseUser::getAllUserData - " . $error->getMessage());
             return null;

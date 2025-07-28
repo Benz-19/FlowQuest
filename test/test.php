@@ -15,7 +15,7 @@ use App\Services\Auth\AuthService;
 // $id = (new DB)->execute("SELECT id FROM users WHERE email='kingsley@flowquest.io' LIMIT 1");
 // echo $id;
 $_POST['loginBtn'] = true;
-$_POST['email'] = 'kingsley@flowquest.io';
+$_POST['email'] = 'code.crafter.crafter@gmail.com';
 $_POST['password'] = 55555;
 
 (new AuthService)->login();
