@@ -10,3 +10,4 @@ Route::get('/api/user-email-check', [UserDataApiController::class, 'checkEmail']
 Route::post('/api/send-verification-code', [UserDataApiController::class, 'sendCode']);
 Route::post('/api/verify-code', [UserDataApiController::class, 'verifyCode']);
 Route::post('/api/user-register', [UserDataApiController::class, 'registerUser']);
+Route::post('/api/send-password-reset-verification-code', [UserDataApiController::class, 'passwordReset']);

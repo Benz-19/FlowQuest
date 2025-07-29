@@ -7,6 +7,7 @@ use App\Models\Freelancer;
 use App\Models\Client;
 use App\Models\Admin;
 use App\Helper\Mailer;
+use App\Helper\ResetPasswordMailer;
 use App\Http\Controllers\Auth\AuthController;
 
 class AuthService
@@ -49,7 +50,7 @@ class AuthService
         $storedCode = $_SESSION['verification_code'][$email] ?? null;
         $isValid = $storedCode && ((string)$storedCode === $code);
 
-        return ['valid' => $isValid];
+        return ['valid' => $isValid, 'code' => $storedCode];
     }
 
     public static function registerUser(array $data): array
@@ -89,6 +90,24 @@ class AuthService
         return [
             'status' => $result ? 200 : 400,
             'message' => $result ? 'Registration Success' : 'Registration Failure...'
+        ];
+    }
+
+
+    public static function passwordReset(string $email, string $name): array
+    {
+        $email = htmlspecialchars(trim($email));
+        $name = htmlspecialchars(trim($name));
+        $code = rand(100000, 999999);
+        $_SESSION['verification_code'][$email] = $code;
+
+        $mailer = new ResetPasswordMailer();
+        $sent = $mailer->sendVerificationCode($email, $name, $code);
+
+        return [
+            'success' => $sent,
+            'status' => $sent ? 200 : 500,
+            'message' => $sent ? 'Verification code sent' : 'Failed to send email'
         ];
     }
 
