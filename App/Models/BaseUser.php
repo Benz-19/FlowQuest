@@ -167,7 +167,6 @@ abstract class BaseUser extends DB implements UserInterface
             if (password_verify($password, $result['password'])) {
                 return true;
             }
-            error_log('password verification failed.');
             return false;
         } catch (PDOException | Exception $error) {
             error_log('Error in BaseUser::login - ' . $error->getMessage());

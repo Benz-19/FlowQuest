@@ -32,6 +32,25 @@
         #logo.slide-in {
             transform: translateX(0);
         }
+
+        .message {
+            width: 240px;
+            height: 40px;
+            margin: 0 auto;
+            border: solid gray;
+            box-shadow: 1px 0px 5px solid;
+            text-align: center;
+            color: red;
+            display: none;
+        }
+
+        .message .error_msg {
+            padding: 5px;
+        }
+
+        .message.show {
+            display: block;
+        }
     </style>
 </head>
 
@@ -48,6 +67,12 @@
         <p class="text-sm text-center text-gray-600 mb-6">Login to manage your subscriptions & invoices</p>
 
         <form action="/process-login" method="POST">
+            <div class="message <?php echo isset($_SESSION['error']['login_error']) ? 'show' : ''; ?>">
+                <?php if (isset($_SESSION['error']['login_error'])): ?>
+                    <p class="error_msg"><?php echo htmlspecialchars($_SESSION['error']['login_error']); ?></p>
+                    <?php unset($_SESSION['error']['login_error']); ?>
+                <?php endif; ?>
+            </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm mb-2">Email</label>
                 <input type="email" placeholder="you@example.com" name="email"
@@ -86,6 +111,14 @@
     <script>
         window.addEventListener('load', () => {
             document.getElementById('loginCard').classList.add('visible');
+            const errorMessageDiv = document.querySelector('.message.show');
+
+            if (errorMessageDiv) {
+                setTimeout(() => {
+                    errorMessageDiv.classList.remove('show');
+                    errorMessageDiv.style.display = 'none';
+                }, 5000);
+            }
         });
     </script>
 </body>

@@ -151,13 +151,17 @@ class AuthService
         ];
 
         $result = $controller->login($params);
+        if (isset($_SESSION['error']))
+            unset($_SESSION['error']);
 
-        if ($result['response'] === false) {
-            $_SESSION['error'] = "Invalid Credentials";
-            return [
-                'status' => 401,
-                'message' => 'Invalid Credentials'
-            ];
+        if ($result['exists'] === 'does not exists') {
+            $_SESSION['error']['login_error'] = "User does not exists";
+            header('Location: /login');
+            exit;
+        } elseif ($result['exists'] === 'incorrect credentials') {
+            $_SESSION['error']['login_error'] = "Invalid Credentials";
+            header('Location: /login');
+            exit;
         } else {
 
             $_SESSION['user_details'] = $result['user_details'];
@@ -169,14 +173,14 @@ class AuthService
             } elseif ($result['user_type'] === 'freelancer') {
                 header('Location: /freelancer-dashboard');
                 exit;
-            } else {
+            } elseif ($result['user_type'] === 'admin') {
                 header('Location: /admin-dashboard');
+                exit;
+            } else {
+                error_log('Something failed at AuthService::login. Failed to open a page');
+                header('Location: /login');
                 exit;
             }
         }
-
-        error_log('Something failed at AuthService::login. Failed to open a page');
-        header('Location: /login');
-        exit;
     }
 }

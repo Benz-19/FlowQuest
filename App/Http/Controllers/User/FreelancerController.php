@@ -16,6 +16,6 @@ class FreelancerController
     public function getData()
     {
         $controller = new UserDataApiController();
-        $controller->getData();
+        // $controller->getData();
     }
 }

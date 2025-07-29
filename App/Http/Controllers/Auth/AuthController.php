@@ -77,6 +77,14 @@ class AuthController
         ];
 
         $user = new User();
+        $user_info = [];
+
+        $is_user = $user->isUser($data['email']); //checks if the user exists
+        if (!$is_user) {
+            return $user_info = [
+                'exists' => 'does not exists'
+            ];
+        }
         $response = $user->login($params);
         $user_id = $user->getUserIdByEmail($data['email']);
         $user_type = $user->getUserType($data['email']);
@@ -94,12 +102,15 @@ class AuthController
             $user_info = [
                 'response' => $response, //type bool true | false
                 'user_type' => $user_type,
-                'user_details' => $user_details
+                'user_details' => $user_details,
+                'exists' => 'exists'
             ];
 
             return $user_info;
         }
-        return $response;
+        return $user_info = [
+            'exists' => 'incorrect credentials'
+        ];
     }
 
     public function logout()
