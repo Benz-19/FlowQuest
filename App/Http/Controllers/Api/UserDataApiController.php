@@ -42,4 +42,10 @@ class UserDataApiController
         $name  = $_POST['name'] ?? '';
         echo json_encode(AuthService::passwordReset($email, $name));
     }
+
+    public function updatePassword()
+    {
+        $data = $_POST;
+        echo json_encode(AuthService::updatePassword($data));
+    }
 }

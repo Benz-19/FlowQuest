@@ -56,6 +56,18 @@ class AuthController
         }
     }
 
+    public function updatePassword(array $params = [])
+    {
+        try {
+            $user = new User();
+            $result =  $user->updatePassword($params);
+            return $result;
+        } catch (PDOException | Exception $error) {
+            error_log('Something went wrong at AuthController::updatePassword. ErrorType: ' . $error->getMessage());
+            return false;
+        }
+    }
+
     public function login(array $data = [])
     {
         // need user type and details

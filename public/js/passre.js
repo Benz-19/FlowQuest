@@ -41,7 +41,7 @@ const renderSteps = () => {
         <div class="flex justify-between mt-6">
             ${currentStep > 0 ? `<button onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>` : "<span></span>"}
             <button onclick="nextStep()" id="nextBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-                ${currentStep === steps.length - 1 ? "Review" : "Next"}
+                ${currentStep === steps.length - 1 ? "Update" : "Next"}
             </button>
         </div>
     </div>
@@ -97,7 +97,6 @@ const nextStep = async () => {
             });
 
             const result = await verify.json();
-            console.log('The code = ', result);
             if (!result.valid) {
                 showError("❌ Incorrect code.");
                 return;
@@ -125,6 +124,53 @@ const prevStep = () => {
         renderSteps();
     }
 };
+
+const renderReview = () => {
+    const container = document.getElementById("form-step");
+    container.innerHTML = `
+    <form id="finalFreelancerForm" class="fade-card show" style="height:79px;">
+            <h1>All Done 🎉</h1>
+             <div class="flex justify-between">
+                <button type="button" onclick="prevStep()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Previous</button>
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Update Now</button>
+            </div>
+    </form>
+    `;
+
+    document.getElementById("finalFreelancerForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        try {
+            const formData = new URLSearchParams();
+            Object.entries(answers).forEach(([key, val]) => formData.append(key, val));
+
+            const register = await fetch('/api/update-user-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+
+            const text = await register.text();
+            try {
+                const res = JSON.parse(text);
+                if (res.status !== 200) {
+                    showError("❌ Registration failed.");
+                    return;
+                }
+                alert("🎉 Password was updated successfully!");
+                window.location.href = "/login";
+            } catch (parseErr) {
+                console.error("Invalid JSON:", parseErr);
+                showError("❌ Server sent invalid response.");
+            }
+
+        } catch (err) {
+            console.error(err);
+            showError("Something went wrong.");
+        }
+    });
+};
+
 
 function showError(message) {
     const errorEl = document.getElementById("errorMessage");

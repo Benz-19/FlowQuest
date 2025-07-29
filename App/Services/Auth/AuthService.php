@@ -93,6 +93,28 @@ class AuthService
         ];
     }
 
+    public static function updatePassword(array $data): array
+    {
+        $controller = new AuthController();
+
+        $email = filter_var($data['Email'] ?? '', FILTER_VALIDATE_EMAIL);
+        $password = password_hash(htmlspecialchars(trim($data['Password'])), PASSWORD_DEFAULT);
+
+        $params = [
+            ':email' => $email,
+            ':password' => $password
+        ];
+
+        $result = $controller->updatePassword($params);
+
+        unset($_SESSION['verification_code'][$email]);
+
+        return [
+            'status' => $result ? 200 : 400,
+            'message' => $result ? 'Registration Success' : 'Registration Failure...'
+        ];
+    }
+
 
     public static function passwordReset(string $email, string $name): array
     {

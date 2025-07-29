@@ -1,9 +1,3 @@
-<?php
-$email = 'ugwukingsley2019@gmail.com';
-if (isset($_SESSION['verification_code'][$email])) {
-    echo $_SESSION['verification_code'][$email];
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -76,11 +70,6 @@ if (isset($_SESSION['verification_code'][$email])) {
     <!-- JS -->
     <script src="/js/loading_logo.js"></script>
     <script src="/js/passre.js"></script>
-    <script>
-        window.addEventListener('load', () => {
-            document.getElementById('loginCard').classList.add('visible');
-        });
-    </script>
 </body>
 
 </html>

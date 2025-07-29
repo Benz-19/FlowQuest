@@ -175,6 +175,26 @@ abstract class BaseUser extends DB implements UserInterface
         }
     }
 
+    public function updatePassword(array $params = [])
+    {
+        $email = $params[':email'];
+        $password = $params[':password'];
+        try {
+            $query = "UPDATE users SET password=:password WHERE email=:email";
+            $parameters = [
+                ':password' => $password,
+                ':email' => $email
+            ];
+
+            $result = $this->execute($query, $parameters);
+
+            return $result ? true : false;
+        } catch (PDOException | Exception $error) {
+            error_log('Error in BaseUser::updatePassword - ' . $error->getMessage());
+            return false;
+        }
+    }
+
     public function getUserType(string $email)
     {
         try {

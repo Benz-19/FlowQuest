@@ -10,6 +10,7 @@ interface UserInterface
     public function register(array $params = []);
     public function verifyUser(string $email): bool;
     public function isVerified(string $email): ?bool;
+    public function updatePassword(array $params = []);
     public function getUserType(string $email);
     public function getUserIdByEmail(string $user_email): ?string;
     public function getUserDetailsById(int $user_id): ?array;
