@@ -1,0 +1,18 @@
+CREATE TABLE payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    freelancer_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (freelancer_id) REFERENCES users(id)
+);
+
+-- Freelancer
+INSERT INTO payments (project_id, freelancer_id, amount)
+VALUES (1, 1, 1000.00);
+
+INSERT INTO payments (project_id, freelancer_id, amount)
+VALUES (2, 1, 500.00);
+
+

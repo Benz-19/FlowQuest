@@ -1,0 +1,28 @@
+CREATE TABLE projects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    freelancer_id INT NOT NULL,
+    client_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
+    budget DECIMAL(10,2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (freelancer_id) REFERENCES users(id),
+    FOREIGN KEY (client_id) REFERENCES users(id)
+);
+
+-- freelancer
+INSERT INTO projects (freelancer_id, client_id, title, status, budget)
+VALUES (1, 2, 'Website Development', 'in_progress', 1000.00);
+
+INSERT INTO projects (freelancer_id, client_id, title, status, budget)
+VALUES (1, 3, 'Mobile App Design', 'completed', 500.00);
+
+
+-- Client 1: Website Development (Completed)
+INSERT INTO projects (client_id, freelancer_id, title, status, created_at, updated_at)
+VALUES (1, 1, 'Website Development', 'completed', NOW(), NOW());
+
+-- Client 1: Mobile App Design (In Progress)
+INSERT INTO projects (client_id, freelancer_id, title, status, created_at, updated_at)
+VALUES (1, 1, 'Mobile App Design', 'in_progress', NOW(), NOW());

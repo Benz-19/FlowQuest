@@ -1,0 +1,21 @@
+drop table if EXISTS client_payments;
+CREATE TABLE client_payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    freelancer_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    description VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    FOREIGN KEY (freelancer_id) REFERENCES freelancers(id) ON DELETE CASCADE
+);
+
+
+
+-- Client 1: Payment for Website Development (Last Month)
+INSERT INTO client_payments (client_id, freelancer_id, amount, description, created_at)
+VALUES (1, 1, 1000.00, 'Website Development Payment', DATE_SUB(NOW(), INTERVAL 1 MONTH));
+
+-- Client 1: Payment for Mobile App Design (This Month)
+INSERT INTO client_payments (client_id, freelancer_id, amount, description, created_at)
+VALUES (1, 1, 500.00, 'Mobile App Design Payment', NOW());
