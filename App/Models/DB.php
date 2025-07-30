@@ -106,6 +106,23 @@ class DB
         return $res ?: null;
     }
 
+
+    /**
+     * Responsible for retrieving a single column value (e.g. COUNT, SUM)
+     * @param string $query stores the SQL query to be executed
+     * @param array $params is an associative array that stores the prepared statement
+     * @return mixed|null returns the value of the column or null if no result
+     */
+    public function fetchColumn(string $query, array $params = [])
+    {
+        $this->verify_connection();
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+        $res = $stmt->fetchColumn();
+        return $res !== false ? $res : null;
+    }
+
+
     // Added DB features
     public function beginTransaction(): void
     {
