@@ -17,11 +17,20 @@ abstract class AbstractDashboardService implements DashboardInterface
     }
 
     /**
+     * Returns the user data.
+     */
+
+    public function getUserData(): array
+    {
+        return [];
+    }
+
+    /**
      * Common method to format dates or transform results.
      */
     protected function formatDate(string $date): string
     {
-        return date('d-m-Y', strtotime($date));
+        return date('Y-m-d', strtotime($date));
     }
 
     /**

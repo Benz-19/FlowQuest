@@ -26,6 +26,7 @@ class DashboardController
             'metrics' => $this->userService->getMetrics(),
             'recent_activity' => $this->userService->getRecentActivity(),
             'income_analytics' => $this->userService->getIncomeAnalytics(),
+            'user_data' => $this->userService->getUserData()
         ];
 
         header('Content-Type: application/json');

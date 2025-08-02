@@ -2,10 +2,19 @@
 
 namespace App\Services\Dashboard;
 
+use App\Models\Freelancer;
+use App\Models\User;
 use App\Services\Dashboard\AbstractDashboardService;
 
 class FreelancerDashboardService extends AbstractDashboardService
 {
+    public function getUserData(): array
+    {
+        $user = new Freelancer();
+        $user_data = $user->getUserDetailsById($this->userId);
+        return ['user_data' => $user_data ?? 'user'];
+    }
+
     public function getMetrics(): array
     {
         // Total projects
@@ -70,10 +79,22 @@ class FreelancerDashboardService extends AbstractDashboardService
             [':freelancer_id' => $this->userId]
         );
 
+        // Current month
+        $paymentsForCurrentMonth = $this->db->fetchSingleData(
+            "SELECT payment_date FROM payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')"
+        );
+
+        // previous month
+        $paymentsForPreviousMonth = $this->db->fetchSingleData(
+            "SELECT payment_date FROM payments WHERE DATE_FORMAT(payment_date, '%Y-%m') = DATE_FORMAT(CURDATE() - INTERVAL 1 MONTH, '%Y-%m')",
+        );
+
         return [
             'total_income' => $totalIncome ?? 0,
             'last_month' => $lastMonthIncome ?? 0,
-            'this_month' => $thisMonthIncome ?? 0
+            'this_month' => $thisMonthIncome ?? 0,
+            'this_month_date' => $paymentsForCurrentMonth,
+            'previous_month_date' => $paymentsForPreviousMonth
         ];
     }
 }

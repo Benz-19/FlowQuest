@@ -16,8 +16,10 @@ use App\Services\Auth\AuthService;
 // echo $id;
 // print_r((new User)->getUserType('code.crafter.crafter@gmail.com'));
 
-$_POST['loginBtn'] = true;
-$_POST['email'] = 'kingsley@flowquest.io';
-$_POST['password'] = 55555;
+// $_POST['loginBtn'] = true;
+// $_POST['email'] = 'kingsley@flowquest.io';
+// $_POST['password'] = 55555;
 
-(new AuthService)->login();
+// (new AuthService)->login();
+
+echo date('Y-m-d');
