@@ -11,3 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
+-- insert --
+insert into users(username,email,password, user_type, email_verified, status) values ('kingsley', 'kingsley@gmail.com','$2y$10$IR00HdTAAsorgtokpPVGOOeDNMK4QEAI3ZINCxf8C7s/aWqeVYBzm', 'freelancer', 1, 'active');

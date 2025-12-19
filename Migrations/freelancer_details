@@ -11,3 +11,7 @@ CREATE TABLE IF NOT EXISTS freelancer_details (
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+-- insert --
+insert into freelancer_details(user_id, business_name, service_rendered, experience) values (1, 'UK Express', 'Web Development', 3);

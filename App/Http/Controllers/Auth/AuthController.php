@@ -99,13 +99,19 @@ class AuthController
 
         $user_info = [];
         if ($response !== false) {
+
+            if(!$user_details || $user_details == null){
+                return $user_info = [
+                'exists' => 'User does not exists!'
+                ];
+            }
+            
             $user_info = [
                 'response' => $response, //type bool true | false
                 'user_type' => $user_type,
                 'user_details' => $user_details,
                 'exists' => 'exists'
             ];
-
             return $user_info;
         }
         return $user_info = [
