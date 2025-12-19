@@ -142,7 +142,7 @@ function handleSendVerificationCode()
 {
     $input = json_decode(file_get_contents("php://input"), true);
     $email = filter_var($input['email'] ?? '', FILTER_VALIDATE_EMAIL);
-    $name  = htmlspecialchars(trim($input['name'] ?? '')); // Optional: name for email salutation
+    $name  = htmlspecialchars(trim($input['name'] ?? ''));
 
     if (!$email) {
         return json_encode(['success' => false, 'message' => 'Invalid email address.']);
