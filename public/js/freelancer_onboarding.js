@@ -72,7 +72,7 @@ const nextStep = async () => {
             document.getElementById("loader").remove();
 
             if (data.exists) {
-                showError("❌ This email already exists. Try another one.");
+                showError("This email already exists. Try another one.");
                 return;
             }
 
@@ -84,7 +84,7 @@ const nextStep = async () => {
 
             const sent = await send.json();
             if (sent.status !== 200) {
-                showError("❌ Failed to send verification email.");
+                showError("Failed to send verification email.");
                 return;
             }
 
@@ -105,7 +105,7 @@ const nextStep = async () => {
 
             const result = await verify.json();
             if (!result.valid) {
-                showError("❌ Incorrect code.");
+                showError("Incorrect code.");
                 return;
             }
 
@@ -171,14 +171,14 @@ const renderReview = () => {
             try {
                 const res = JSON.parse(text);
                 if (res.status !== 200) {
-                    showError("❌ Registration failed.");
+                    showError("Registration failed.");
                     return;
                 }
                 alert("🎉 Registration successful!");
                 window.location.href = "/login";
             } catch (parseErr) {
                 console.error("Invalid JSON:", parseErr);
-                showError("❌ Server sent invalid response.");
+                showError("Server sent invalid response.");
             }
 
         } catch (err) {

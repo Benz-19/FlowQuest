@@ -68,6 +68,19 @@ class AuthController
         }
     }
 
+
+    public function updateUserStatus(string $email){
+        try {
+            $user = new User();
+            $result =  $user->updateUserStatus($email);
+            return $result;
+        } catch (PDOException | Exception $error) {
+            error_log('Something went wrong at AuthController::updateUserStatus. ErrorType: ' . $error->getMessage());
+            return false;
+        }
+    }
+
+
     public function login(array $data = [])
     {
         // need user type and details
@@ -112,6 +125,10 @@ class AuthController
                 'user_details' => $user_details,
                 'exists' => 'exists'
             ];
+
+            // Update the user status to 'active'
+            $this->updateUserStatus($params['email']);
+            
             return $user_info;
         }
         return $user_info = [
@@ -121,6 +138,6 @@ class AuthController
 
     public function logout()
     {
-        // logout
+        // TODO: logout
     }
 }

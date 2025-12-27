@@ -194,6 +194,23 @@ abstract class BaseUser extends DB implements UserInterface
         }
     }
 
+    public function updateUserStatus(string $email){
+        try{
+            $query = "UPDATE users SET status=:status WHERE email=:email";
+            $params = [
+                ':status'=>'active',
+                ':email'=> $email
+            ];
+
+            $result = $this->execute($query, $params);
+
+            return $result ? true : false;
+        }catch(PDOException | Exception $error){
+            error_log('Error in BaseUser::updateUserStatus - ' . $error->getMessage());
+            return false;
+        }
+    }
+
     public function getUserType(string $email)
     {
         try {

@@ -6,6 +6,7 @@ use CustomRouter\Route;
 use App\Http\Controllers\Pages\PagesController;
 use App\Http\Controllers\Payments\PaymentsController;
 use App\Services\Auth\AuthService;
+use App\Services\Api\BaseApiService;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -42,3 +43,6 @@ Route::get('/freelancer-dashboard', [PagesController::class, 'renderFreelancerDa
 // Test page
 Route::get('/test', [PagesController::class, 'renderLandingPage']);
 Route::get('/test-pages', [PagesController::class, 'renderTestingPage']);
+
+
+Route::get('/api/dashboard', [BaseApiService::class, 'loadUserDashboard']);

@@ -166,6 +166,7 @@ class AuthService
 
             $_SESSION['user_details'] = $result['user_details'];
             $_SESSION['logged_in'] = true;
+            
 
             if ($result['user_type'] === 'client') {
                 header('Location: /client-dashboard');

@@ -1,0 +1,132 @@
+/* =========================
+   Base Reset & Variables
+========================= */
+:root {
+    --bg: #0f172a;          
+    --card-bg: #111827;       
+    --border: #1f2933;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --primary: #3b82f6;
+    --success: #22c55e;
+    --warning: #f59e0b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+/* =========================
+   Header
+========================= */
+h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+/* =========================
+   Dashboard Layout
+========================= */
+#dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =========================
+   Cards / Sections
+========================= */
+section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* =========================
+   Metrics & Analytics
+========================= */
+section p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+section p span {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+#completed-projects {
+    color: var(--success);
+}
+
+#active-projects {
+    color: var(--warning);
+}
+
+#total-income,
+#this-month {
+    color: var(--success);
+}
+
+/* =========================
+   Recent Activity
+========================= */
+#recent-activity ul {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+#recent-activity li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+#recent-activity li:last-child {
+    border-bottom: none;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 600px) {
+    body {
+        padding: 1.2rem;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+}

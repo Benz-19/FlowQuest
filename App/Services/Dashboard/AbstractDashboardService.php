@@ -3,7 +3,7 @@
 namespace App\Services\Dashboard;
 
 use App\Models\DB;
-use App\Services\Dashboard\interfaces\DashboardInterface;
+use App\Services\Dashboard\Interfaces\DashboardInterface;
 
 abstract class AbstractDashboardService implements DashboardInterface
 {
